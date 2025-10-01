@@ -56,7 +56,7 @@ return [
                             nearby.',
 'create_post_title'=>'Share What <span>You See </span>',
 'create_post_desc'=>'Upload a photo, add a caption, and let your community know what’s
-                            happening <br>around you. Choose a Standard or Alert post based on the urgency',
+                            happening around you. Choose a Standard or Alert post based on the urgency',
 'event_post_title'=>'Local Events <span>& Happenings</span>',
 'event_post_desc'=>'Discover what’s going on around you from public gatherings and cultural events to <br> spontaneous street performances and local alerts.',
 'event_post_create_title'=>'Ready to share your First Post?',

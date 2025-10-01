@@ -131,7 +131,7 @@
     ];
 @endphp
 
-<div class="dropdown">
+<div class="dropdown" style="background: none !important;">
     <button class="btn btn-light dropdown-toggle" type="button" id="languageBtn"
         data-bs-toggle="dropdown" aria-expanded="false">
         🌐 Language

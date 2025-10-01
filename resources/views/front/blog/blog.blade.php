@@ -31,17 +31,19 @@
         }
     </style>
     <main class="contact">
-        <section class="mt-5 pt-4 breadcrumbs">
+        <section class="mt-5 pt-4 breadcrumbs mb-0">
             <div class="container">
-                <div class="row mt-5 margin-on-mobile">
-                    <h1 class="col text-light fw-semibold fs-1 text-on-mobile">Blog</h1>
-                    <h2 class="text-light fs-5 text-on-mobile-h5">
-                        <a href="/">Home</a>&emsp;<span>/&emsp;Blog</span>
-                    </h2>
+                <div class="row mt-sm-4 mt-3 margin-on-mobile">
+                   
+                    <div class="col-lg-12 text-center">
+                        {{-- <h2 class="heading">Blog<span>&amp; Happenings</span></h2> --}}
+                        <h2 class="heading">Blogs</h2>
+                       
+                    </div>
                 </div>
             </div>
         </section>
-        <section>
+        <section class="mt-sm-4 mt-3">
             <div class="container">
                 <div class="row">
                     <div class="col-lg-8">
@@ -67,8 +69,7 @@
                                             </h5>
                                             <p class="card-text">{!! \Str::words($blog->description, 20, '...') !!}</p>
                                             <a href="{{ route('blog-details', ['slug' => $blog->slug]) }}"
-                                                class="btn-blogs btn--with-icon"><i
-                                                    class="btn-icon fa fa-long-arrow-right"></i>READ MORE</a>
+                                                class="btn-primary-hero btn--with-icon">READ MORE</a>
                                         </div>
                                     </div>
                                 </div>

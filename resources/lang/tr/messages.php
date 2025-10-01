@@ -56,7 +56,7 @@ return [
                             yakında.',
 'create_post_title'=>'<span>Gördüklerinizi </span> Paylaşın',
 'create_post_desc'=>'Bir fotoğraf yükleyin, başlık ekleyin ve topluluğunuza neler olduğunu bildirin
-                            <br>etrafınızda oluyor. Aciliyete göre Standart veya Uyarı gönderisini seçin',
+                            etrafınızda oluyor. Aciliyete göre Standart veya Uyarı gönderisini seçin',
 'event_post_title'=>'Yerel Etkinlikler <span>ve Etkinlikler</span>',
 'event_post_desc'=>'Halka açık toplantılardan kültürel etkinliklere, spontane sokak performanslarından yerel uyarılara kadar çevrenizde olup bitenleri keşfedin.',
 'event_post_create_title'=>'İlk Gönderinizi paylaşmaya hazır mısınız?',

@@ -13,16 +13,21 @@
             color: var(--main-color);
         }
 
-        .img-mic {
-            top: 1793px !important;
-        }
-
-        @media (min-width: 991px) and (max-width: 1280px) {
-            .img-mic {
-                top: 1703px !important;
-                left: 665px !important
-            }
-        }
+       
+      input, optgroup, select, textarea {
+ 
+    border-radius: 4px !important;
+    background: #fff !important;
+    border: none;
+        border: 1px solid #9f9c9c;
+        font-size:15px;
+    }
+       @media(max-width:576px)
+       {
+        button, input, optgroup, select, textarea {
+    height: 40px;
+}
+       }
     </style>
 
     <style>
@@ -37,7 +42,7 @@
         }
     </style>
     <section class="difference-section py-0">
-        <div class="container py-5 ">
+        <div class="container pt-5 ">
             <div class="row justify-content-center">
                 <div class="col-lg-10 col-md-12">
                     <div class="contact-wrapper">
@@ -98,7 +103,7 @@
                                     </option>
                                 </select>
 
-                                <button type="submit" class="filter-button">Apply Filters</button>
+                                <button type="submit" class="filter-button btn-dark" style="white-space: nowrap;">Apply Filters</button>
                             </div>
                         </form>
                     </div>
@@ -122,10 +127,31 @@
                                     <a href="#">{{ $event->title }}</a>
                                 </h2>
                                 <p>{{ Str::words($event->description, 20, '...') }}
-                                    <a href="{{ url('eventdetail/' . $event->id) }}" class="btn btn-sm btn-danger mt-2">
+                                    <a href="{{ url('eventdetail/' . $event->id) }}" class="read-more-link mt-2">
                                         Read More
                                     </a>
                                 </p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="text-14">
+                                        <!-- Like button -->
+                                        <span class="btn-like" data-id="{{ $event->id }}">
+                                            <i
+                                                class="fa-solid fa-thumbs-up {{ $event->likedByUser(auth()->id()) ? 'text-danger' : 'text-warning' }}"></i>
+                                            <span class="like-count">{{ $event->likes()->count() }}</span>
+                                            Likes
+                                        </span>&nbsp;
+                                        <span><i
+                                                class="fa-solid fa-comments text-success"></i>&nbsp;{{ $event->comments_count }}
+                                            Comments</span>
+                                    </div>
+                                    {{-- <a class="border-0" href="{{ url('eventdetail/' . $event->id) }}">
+                                        <i class="fa-solid fa-share-from-square fs-6 text-dark"></i>
+                                    </a> --}}
+                                    <a class="border-0" href="#"
+                                        onclick="sharePost('{{ url('eventdetail/' . $event->id) }}', '{{ $event->title }}'); return false;">
+                                        <i class="fa-solid fa-share-from-square fs-6 text-dark"></i>
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -168,7 +194,7 @@
 
         </div>
     </section>
-    <section style="background-color: black;" class="my-0">
+    <section style="background-color: black;" class="my-0 position-relative">
         <div class="container py-5">
             <div class="row d-flex justify-content-center">
 

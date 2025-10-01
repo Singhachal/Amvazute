@@ -8,10 +8,10 @@
         }
 
         .sidebar {
-            height: 100vh;
+            /* height: 100vh; */
             overflow-y: auto;
             background-color: #000;
-            /* padding: 1rem; */
+            /* padding: 1rem; */    
         }
 
         .text-muted {
@@ -20,6 +20,7 @@
 
         .sidebar img {
             border-radius: 2px;
+
             height: 100px;
             width: 100px;
         }
@@ -92,6 +93,15 @@
         input::placeholder {
             color: #fff !important;
         }
+        .form-select {
+            font-size: 14px !important;
+        }
+        @media (max-width:576px)
+        {
+            .form-select {
+            font-size: 12px !important;
+        }
+        }
     </style>
     <section class="">
         <div class="container-fluid">
@@ -113,13 +123,13 @@
                         <button class="filter-button">Sort By <i class="arrow-down"></i></button>
                     </div> --}}
 
-                    <div class="filter-bar mb-3">
+                    <div class="filter-bar mb-2">
     <form method="GET" action="{{ url()->current() }}">
         <input type="hidden" name="lat" value="{{ $userLat }}">
         <input type="hidden" name="lng" value="{{ $userLng }}">
 
         <!-- Distance Filter -->
-        <select name="distance" class="form-select d-inline-block w-auto">
+        <select name="distance" class="form-select d-inline-block w-auto  mb-2">
             <option value="">View posts within</option>
             <option value="500" {{ request('distance') == 500 ? 'selected' : '' }}>500 m</option>
             <option value="1000" {{ request('distance') == 1000 ? 'selected' : '' }}>1 km</option>
@@ -128,7 +138,7 @@
         </select>
 
         <!-- Post Type Filter -->
-        <select name="type" class="form-select d-inline-block w-auto">
+        <select name="type" class="form-select d-inline-block w-auto mb-2">
             <option value="">Post Type</option>
             <option value="alert" {{ request('type') == 'alert' ? 'selected' : '' }}>Alert</option>
             <option value="place" {{ request('type') == 'place' ? 'selected' : '' }}>Place</option>
@@ -136,12 +146,12 @@
         </select>
 
         <!-- Sort Filter -->
-        <select name="sort" class="form-select d-inline-block w-auto">
+        <select name="sort" class="form-select d-inline-block w-auto mb-2">
             <option value="latest" {{ request('sort') == 'latest' ? 'selected' : '' }}>Latest</option>
             <option value="oldest" {{ request('sort') == 'oldest' ? 'selected' : '' }}>Oldest</option>
         </select>
 
-        <button type="submit" class="btn btn-sm btn-danger">Apply</button>
+        <button type="submit" class="btn btn-sm btn-danger py-1">Apply</button>
     </form>
 </div>
 

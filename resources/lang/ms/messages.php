@@ -58,11 +58,11 @@ return [
 'create_post_desc'=>'Muat naik foto, tambahkan kapsyen dan beritahu komuniti anda tentang perkara itu
                             berlaku <br>di sekeliling anda. Pilih siaran Standard atau Makluman berdasarkan keperluan mendesak',
 'event_post_title'=>'Acara Tempatan <span>& Peristiwa</span>',
-'event_post_desc'=>'Temui perkara yang berlaku di sekeliling anda daripada perhimpunan awam dan acara kebudayaan hingga <br> persembahan jalanan spontan dan makluman tempatan.',
+'event_post_desc'=>'Temui perkara yang berlaku di sekeliling anda daripada perhimpunan awam dan acara kebudayaan hingga persembahan jalanan spontan dan makluman tempatan.',
 'event_post_create_title'=>'Bersedia untuk berkongsi Siaran Pertama anda?',
 'event_post_create_desc'=>'Sama ada amaran atau penampakan tempatan, siaran anda membantu orang yang berdekatan.',
 'contact_title'=>'Hubungi <span>dengan Kami </span>',
-'contact_desc'=>'Ada soalan, ternampak isu atau ingin berkongsi maklum balas? Kami ingin mendengar daripada <br>anda. Isi borang di bawah dan pasukan kami akan menghubungi anda secepat mungkin.',
+'contact_desc'=>'Ada soalan, ternampak isu atau ingin berkongsi maklum balas? Kami ingin mendengar daripada  anda. Isi borang di bawah dan pasukan kami akan menghubungi anda secepat mungkin.',
 'about_title'=>'Mengenai<span>AM VAZUT</span>.',
 'about_desc1'=>'AM VAZUT ialah apl mudah yang membolehkan orang ramai berkongsi foto dan video pendek perkara yang mereka lihat di sekeliling mereka. Setiap hari, kita melihat detik-detik yang berbeza dalam kehidupan biasa kita, beberapa daripadanya memberi inspirasi kepada kita, ada yang memberi amaran kepada kita, dan yang lain memerlukan tindakan. Dengan AM VAZUT, anda boleh berkongsi detik kehidupan sebenar dengan komuniti apabila ia berlaku. Aplikasi ini membolehkan anda berkongsi apa sahaja - sesuatu yang indah, luar biasa atau membimbangkan. Foto atau video anda boleh membuat perubahan.',
 'about_desc2'=>'Aplikasi AM VAZUT membolehkan orang ramai mengambil video pendek atau imej peristiwa dan situasi, dan kemudian anda boleh menambah penerangan atau ulasan ringkas jika anda mahu, dan menerbitkannya serta-merta. Foto atau video ini akan kelihatan kepada orang yang berada berhampiran lokasi. Laporan anda boleh membantu orang ramai untuk terus mendapat maklumat tentang perkara yang berlaku di sekeliling mereka.',

@@ -10,7 +10,7 @@
                         <p style="font-size: 15px;">{{ __('messages.create_post_desc') }}.</p>
                     </div>
                 </div>
-                <div class="post-card mt-4">
+                <div class="post-card mt-sm-4 mt-2">
                     {{-- <form>
             <div class="row g-3 mb-3">
               <div class="col-md-3">

@@ -11,7 +11,7 @@
                                 your community in real time.</p>
 
                             <div class="social-buttons">
-                               <a href="{{ route('google.login') }}" class="google-btn"><i class="fa-solid fa-magnifying-glass f6"></i>&nbsp;Sign up with
+                               <a href="{{ route('google.login') }}" class="google-btn w-100 d-block text-center text-dark"><i class="fa-solid fa-magnifying-glass f6"></i>&nbsp;Sign up with
                                     Google</a>
                                 <button class="apple-btn"><i class="fa-brands fa-apple"></i>&nbsp;Sign up with
                                     Apple</button>
