@@ -1,5 +1,10 @@
 @extends('front.layouts.main')
 @section('content')
+    <style>
+        .card-img-top {
+            height: 300px;
+        }
+    </style>
     <section class="difference-section py-0 mb-0">
         {{-- <div class="container py-5 ">
             <div class="row justify-content-center text-14">
@@ -114,8 +119,9 @@
                 </div>
 
                 <!-- Keep this part static -->
-                <div class="col-lg-12 text-14 mt-2 d-flex justify-content-between">
-                    <div>
+                <div class="col-lg-12 text-14 mt-2 ">
+                    <div class="row d-flex justify-content-between">
+                    <div class="col-md-6 col-12">
                         <span class="badge bg-info-color ">{{ $event->label }}</span>
                         <span>{{ $event->distance_text }} | {{ $event->time_ago }}</span>
                         <span><b>@irina_s</b> </span>
@@ -124,13 +130,14 @@
                             class="fw-semibold text-decoration-underline text-dark">| Get Map View</a>
 
                     </div>
-                    <div class="text-14">
-                        <button class="btn-like" data-id="{{ $event->id }}">
+                    <div class="text-14 col-md-6 col-12 mt-md-1 mt-2 text-sm-end">
+                        <span class="btn-like" data-id="{{ $event->id }}">
                             <i class="fa-solid fa-thumbs-up {{ $liked ? 'text-danger' : 'text-warning' }}"></i>
                             <span class="like-count">{{ $totalLikes }}</span> Likes
-                        </button>
-
-                        <span><i class="fa-solid fa-comments text-success"></i>&nbsp;{{ $commentCount }} Comments</span>&emsp;
+                        </span>
+                        &nbsp;
+                        <span><i class="fa-solid fa-comments text-success"></i>&nbsp;{{ $commentCount }}
+                            Comments</span>&emsp;
                         {{-- <a class="border-0 text-dark" href="">
                             <i class="fa-solid fa-share-from-square fs-6 text-muted"></i>share
                         </a>&emsp; --}}
@@ -145,7 +152,7 @@
                         </a> --}}
                     </div>
                 </div>
-
+            </div>
                 <!-- Only description is dynamic -->
                 <div class="col-lg-12 mt-4">
                     <h1 class="heading fs-5">{{ $event->title }}</h1>

@@ -51,8 +51,8 @@
                     </div>
                 </div>
                 <div class="row g-4 mt-1">
-                    <div class="col-md-3 col-sm-6">
-                        <div class="stat-card  bg-white p-3  rounded">
+                    <div class="col-md-3 col-sm-6 ">
+                        <div class="stat-card  bg-white p-3  h-100 rounded">
                             <div class="d-flex align-item-center mb-2">
                                 <i class="fa-regular fa-camera fs-5 text-primary "></i>&emsp;
                                 {{-- <i class="bi bi-people "></i> --}}
@@ -63,7 +63,7 @@
                         </div>
                     </div>
                     <div class="col-md-3 col-sm-6">
-                        <div class="stat-card  bg-white p-3  rounded">
+                        <div class="stat-card  bg-white p-3 h-100 rounded">
                             <div class="d-flex align-item-center mb-2">
                                 <i class="fa-solid fa-location-dot fs-5 text-warning "></i>&emsp;
                                 <h3 class="fs-6 fw-bold">{{ __('messages.capture_title') }}</h3>
@@ -74,7 +74,7 @@
                         </div>
                     </div>
                     <div class="col-md-3 col-sm-6">
-                        <div class="stat-card  bg-white p-3  rounded">
+                        <div class="stat-card  bg-white p-3 h-100 rounded">
                             <div class="d-flex align-item-center mb-2">
                                 <i class="fa-regular fa-file-lines fs-5 text-primary "></i>&emsp;
                                 <h3 class="fs-6 fw-bold">{{ __('messages.share_title') }} </h3>
@@ -84,7 +84,7 @@
                         </div>
                     </div>
                     <div class="col-md-3 col-sm-6">
-                        <div class="stat-card  bg-white p-3  rounded">
+                        <div class="stat-card  bg-white p-3 h-100 rounded">
                             <div class="d-flex align-item-center mb-2">
                                 <i class="fa-solid fa-users-line fs-5 text-warning "></i>&emsp;
                                 <h3 class="fs-6 fw-bold">{{ __('messages.others_title') }}</h3>
@@ -109,7 +109,7 @@
                         <div>
                             {{-- <button type="button" class="btn-primary-hero mt-sm-4">Read More</button> --}}
                             <a href="{{ url('event') }}">
-                                <button type="button" class="btn-primary-hero mt-sm-4">Read More</button>
+                                <button type="button" class="btn-primary-hero mt-sm-4">View More</button>
                             </a>
 
                         </div>
@@ -169,7 +169,7 @@
 
                                             <p>{{ Str::words($event->description, 20, '...') }}
                                                 <a href="{{ url('eventdetail/' . $event->id) }}"
-                                                    class="btn btn-sm btn-danger mt-2">
+                                                    class="read-more-link mt-2">
                                                     Read More
                                                 </a>
                                             </p>
@@ -178,12 +178,12 @@
                                             <div class="d-flex justify-content-between align-items-center">
                                                 <div class="text-14">
                                                     <!-- Like button -->
-                                                    <button class="btn-like" data-id="{{ $event->id }}">
+                                                    <span class="btn-like" data-id="{{ $event->id }}">
                                                         <i
                                                             class="fa-solid fa-thumbs-up {{ $event->likedByUser(auth()->id()) ? 'text-danger' : 'text-warning' }}"></i>
                                                         <span class="like-count">{{ $event->likes()->count() }}</span>
                                                         Likes
-                                                    </button>
+                                                    </span>&nbsp;
                                                     <span><i
                                                             class="fa-solid fa-comments text-success"></i>&nbsp;{{ $event->comments_count }}
                                                         Comments</span>
@@ -212,7 +212,7 @@
                 </div>
             </div>
         </section>
-        <section style="background: black; color:white;">
+        <section style="background: black; color:white;" class="position-relative">
             <div class="container">
                 <div class="row py-5">
                     <div class="col-lg-6">
@@ -358,7 +358,7 @@
 
                     </div>
                     <div class="col-lg-6 ">
-                        <img src="{{ asset('front/asset/img/home/Rectangle5.png') }}" alt="" width="630px"
+                        <img src="{{ asset('front/asset/img/home/Rectangle5.png') }}" alt="" width="100%"
                             height="400px " class="img-responsive-here">
                     </div>
                 </div>
@@ -462,7 +462,7 @@
 
             </div>
         </section>
-        <section style="background-color: black;">
+        <section style="background-color: black;" class="position-relative">
             <div class="container py-5">
                 <div class="row d-flex justify-content-center">
 

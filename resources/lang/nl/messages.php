@@ -56,7 +56,7 @@ return [
                             dichtbij.',
 'create_post_title'=>'Deel wat <span>je ziet</span>',
 'create_post_desc'=>'Upload een foto, voeg een bijschrift toe en laat uw community weten wat er is
-                            er gebeurt <br>om je heen. Kies een Standaard- of Alert-post op basis van de urgentie',
+                            er gebeurt om je heen. Kies een Standaard- of Alert-post op basis van de urgentie',
 'event_post_title'=>'Lokale evenementen <span>en gebeurtenissen</span>',
 'event_post_desc'=>'Ontdek wat er om je heen gebeurt, van openbare bijeenkomsten en culturele evenementen tot <br> spontane straatoptredens en lokale waarschuwingen.',
 'event_post_create_title'=>'Klaar om je eerste bericht te delen?',

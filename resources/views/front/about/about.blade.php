@@ -1,10 +1,6 @@
 @extends('front.layouts.main')
 @section('content')
-    <style>
-        .img-mic {
-            top: 2518px !important;
-        }
-    </style>
+   
     <section class="difference-section pt-4">
         <div class="container">
             <div class="row justify-content-center">
@@ -267,7 +263,7 @@
 
         </div>
     </section>
-    <section style="background-color: black;">
+    <section style="background-color: black;" class="position-relative"> 
         <div class="container py-5">
             <div class="row d-flex justify-content-center">
 

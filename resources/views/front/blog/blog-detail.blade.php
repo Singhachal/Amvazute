@@ -44,22 +44,25 @@ $queryString = $queryString ?? '';
 }
 </style>
 <main class="contact">
-    <section class="mt-5 pt-4 breadcrumbs">
+    <section class="mt-5 pt-4 breadcrumbs mb-0">
         <div class="container">
-            <div class="row mt-5 margin-on-mobile">
-                <h1 class="col text-light fw-semibold fs-1 text-on-mobile">Blog Details</h1>
-                <h2 class="text-light fs-5 text-on-mobile-h5">
-                    <a href="/">Home</a>&emsp;<span>/&emsp;Blog Details</span>
-                </h2>
+            <div class="row mt-sm-5 mt-3 margin-on-mobile">
+                <div class="col-lg-12 text-center">
+                    <h2 class="heading">Blog<span>&nbsp;Details</span></h2>
+                    {{-- <h2 class="heading">Blog Details</h2> --}}
+                </div>
             </div>
         </div>
     </section>
-    <section>
+    <section class="mt-sm-4 mt-3">
         <div class="container">
             <div class="row">
                 <div class="col-lg-8">
                     <div class="row gx-3 gy-2">
                         <div class="col-md-12 col-sm-12 mb-2">
+                            {{-- <h3 class="card-title  mb-2 "><a class="fw-semibold fs-4" style="color: var(--main-color);"
+                                href="#">{{ $currentBlog->title }}</a>
+                        </h3> --}}
                             <div class="card" style="border: 1px solid rgb(168, 165, 165);">
                                 <a href="#">
                                     <img src="{{ asset($currentBlog->banner_image_url) }}" height="182"
@@ -106,7 +109,7 @@ $queryString = $queryString ?? '';
                             <div class="col-lg-12">
 
                                 <div class="row">
-                                    <h2 class="fw-semibold mid-text pt-3">Related Post
+                                    <h2 class="wp-block-heading fw-semibold  fs-4 small-cnt-color mt-3">Related Post
                                     </h2>
                                     @if ($relatedBlogs->isNotEmpty())
                                     @foreach ($relatedBlogs as $blog)
@@ -179,7 +182,7 @@ $queryString = $queryString ?? '';
 
                                     <div class="text-center mt-3">
                                         <button type="submit" id="enquirySubmit"
-                                            class="btn btn-lg button-29 text-center">
+                                            class="btn-primary-hero btn--with-icon">
                                             Enquiry Now
                                         </button>
                                     </div>
@@ -302,7 +305,7 @@ $queryString = $queryString ?? '';
                         </div>
                         <input type="hidden" name="rating" id="rating-value" value="">
 
-                        <div class="form-group">
+                        <div class="form-group pb-3">
                             <label class="control-label fw-semibold" for="review">Your Comment:</label>
                             <textarea class="form-control" rows="5" placeholder="Your Reivew" name="review"
                                 id="review"></textarea>
@@ -310,7 +313,7 @@ $queryString = $queryString ?? '';
                             </span>
 
                         </div>
-                        <a href="#" id="submit" class="button-29  fs-6">Post A Comment</a>
+                        <a href="#" id="submit" class="btn-primary-hero btn--with-icon mt-2">Post A Comment</a>
                     </form>
 
                 </div>
@@ -324,7 +327,7 @@ $queryString = $queryString ?? '';
         <div class="container">
             <div class="row">
                 <div class="comments-area">
-                    <h3 class="comments-title heading-clr">({{ $currentBlog->reviews->count() }}) Comments:</h3>
+                    <h3 class="wp-block-heading fw-semibold  fs-4 small-cnt-color mt-2">({{ $currentBlog->reviews->count() }}) Comments:</h3>
                     <ul class="" type=none>
                         @if ($currentBlog->reviews->isNotEmpty())
                         @foreach ($currentBlog->reviews->reverse()->take(4) as $blogReview)

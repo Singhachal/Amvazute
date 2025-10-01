@@ -20,7 +20,7 @@
                             </div> --}}
 
                             <div class="social-buttons">
-                                <a href="{{ route('google.login') }}" class="google-btn w-100 d-block text-center">
+                                <a href="{{ route('google.login') }}" class="google-btn w-100 d-block text-center text-dark">
                                     <i class="fa-brands fa-google"></i>&nbsp;Sign up with Google
                                 </a>
                             </div>
@@ -72,7 +72,7 @@
                                     <button type="submit" class="signup-btn">Sign Up</button>
                             </form>
                         </div>
-                        <p class="login-link text-center">Already have an account? <a href="#">Login</a></p>
+                        <p class="login-link text-center">Already have an account? <a href="/login">Login</a></p>
                     </div>
 
                     <div class="image-section">
