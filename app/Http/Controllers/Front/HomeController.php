@@ -1442,10 +1442,8 @@ public function storePost(Request $request)
     $event->reported_at = now();
     $event->save();
 
-    return response()->json([
-        'status' => 'success',
-        'message' => 'Event posted successfully!'
-    ]);
+    return redirect()->route('thankyou')->with('success', 'Event posted successfully!');
+
 }
 
 

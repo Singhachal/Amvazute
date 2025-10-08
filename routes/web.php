@@ -99,6 +99,9 @@ Route::post('/event/{id}/like', [HomeController::class, 'toggleLike'])->middlewa
 
 
 Route::get('set-locale/{locale}', [LocaleController::class, 'setLocale'])->name('set-locale');
+Route::get('/thank-you', function () {
+    return view('front.thankyou');
+})->name('thankyou');
 
 
 
