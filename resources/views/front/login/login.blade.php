@@ -68,7 +68,7 @@
                                 </form>
                             </div>
 
-                            <p class="login-link text-center">Don’t have an account? <a href="#"> New here? Create an
+                            <p class="login-link text-center">Don’t have an account? <a href="{{ route('register') }}"> New here? Create an
                                     account</a></p>
                         </div>
 

@@ -735,7 +735,7 @@ public function eventdetail(Request $request, $id)
     $userLng = $request->input('lng', 77.2090);
 
     // Fetch event
-    $event = Event::with('media')->findOrFail($id);
+    $event = Event::with('media', 'user')->findOrFail($id);
 
     // Distance calculation
     $distance = 6371000 * 2 * asin(sqrt(
@@ -1420,7 +1420,6 @@ public function storePost(Request $request)
         'longitude' => 'required|numeric',
         'postType'  => 'required|string',
         'terms'     => 'accepted',
-        'file'      => 'nullable|file|mimes:jpg,jpeg,png,mp4|max:20480'
     ]);
 
     // 3️⃣ Create new event
