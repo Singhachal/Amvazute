@@ -124,7 +124,7 @@
                     <div class="col-md-6 col-12">
                         <span class="badge bg-info-color ">{{ $event->label }}</span>
                         <span>{{ $event->distance_text }} | {{ $event->time_ago }}</span>
-                        <span><b>@irina_s</b> </span>
+                        <span><b>{{ $event->user->name ?? 'Unknown' }}</b></span>
                         {{-- <a href="/map" class="fw-semibold text-decoration-underline text-dark">| Get Map View</a> --}}
                         <a href="{{ route('events.map.single', $event->id) }}"
                             class="fw-semibold text-decoration-underline text-dark">| Get Map View</a>

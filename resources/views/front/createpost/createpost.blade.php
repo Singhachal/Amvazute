@@ -78,9 +78,9 @@
                                 <label class="form-label">Take Photo Now</label>
                                 <div class="input-group">
                                     <input type="file" name="file" id="fileInput" class="d-none" accept="image/*"
-                                        capture="camera">
+                                        capture="camera" required>
                                     <input type="text" id="fileName" class="form-control" placeholder="Launch camera"
-                                        readonly style="border-right: 0px !important;" />
+                                        readonly style="border-right: 0px !important;" required/>
                                     <button class="input-group-text bg-secondary border-0 text-white" type="button"
                                         id="cameraBtn">
                                         <i class="bi bi-camera"></i>

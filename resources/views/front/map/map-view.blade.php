@@ -11,7 +11,7 @@
             /* height: 100vh; */
             overflow-y: auto;
             background-color: #000;
-            /* padding: 1rem; */    
+            /* padding: 1rem; */
         }
 
         .text-muted {
@@ -101,6 +101,10 @@
             .form-select {
             font-size: 12px !important;
         }
+        }
+
+        .leaflet-routing-container {
+            display: none;
         }
     </style>
     <section class="">

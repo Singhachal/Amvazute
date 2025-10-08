@@ -13,21 +13,29 @@
             color: var(--main-color);
         }
 
-       
-      input, optgroup, select, textarea {
- 
-    border-radius: 4px !important;
-    background: #fff !important;
-    border: none;
-        border: 1px solid #9f9c9c;
-        font-size:15px;
-    }
-       @media(max-width:576px)
-       {
-        button, input, optgroup, select, textarea {
-    height: 40px;
-}
-       }
+
+        input,
+        optgroup,
+        select,
+        textarea {
+
+            border-radius: 4px !important;
+            background: #fff !important;
+            border: none;
+            border: 1px solid #9f9c9c;
+            font-size: 15px;
+        }
+
+        @media(max-width:576px) {
+
+            button,
+            input,
+            optgroup,
+            select,
+            textarea {
+                height: 40px;
+            }
+        }
     </style>
 
     <style>
@@ -75,12 +83,26 @@
                                 <!-- Event Type -->
                                 <select name="label">
                                     <option value="">All Types</option>
+                                    {{-- @foreach ($labels as $label)
+                                        <option value="{{ $label }}"
+                                            {{ request('label') == $label ? 'selected' : '' }}>
+                                            {{ ucfirst($label) }}
+                                        </option>
+                                    @endforeach --}}
+                                    @php
+                                        // Add default label if it's not already in the list
+                                        if (!$labels->contains('General')) {
+                                            $labels->push('General');
+                                        }
+                                    @endphp
+
                                     @foreach ($labels as $label)
                                         <option value="{{ $label }}"
                                             {{ request('label') == $label ? 'selected' : '' }}>
                                             {{ ucfirst($label) }}
                                         </option>
                                     @endforeach
+
                                 </select>
 
 
@@ -103,7 +125,8 @@
                                     </option>
                                 </select>
 
-                                <button type="submit" class="filter-button btn-dark" style="white-space: nowrap;">Apply Filters</button>
+                                <button type="submit" class="filter-button btn-dark" style="white-space: nowrap;">Apply
+                                    Filters</button>
                             </div>
                         </form>
                     </div>
@@ -114,7 +137,8 @@
                 @foreach ($events as $event)
                     <div class="col-lg-4 col-md-6 col-12">
                         <div class="card product-card h-100">
-                            <span class="badge bg-info-color position-absolute top-0 end-0 m-3">{{ $event->label }}</span>
+                            <span
+                                class="badge bg-info-color position-absolute top-0 end-0 m-3">{{ $event->label ?? 'General' }}</span>
                             <img src="{{ asset('admin/uploads/event/' . $event->media_path) }}" class="card-img-top"
                                 alt="Event Image">
                             <div class="card-body">
