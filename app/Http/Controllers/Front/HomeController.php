@@ -16,48 +16,142 @@ class HomeController extends Controller
 {
 
 
+// public function index(Request $request)
+// {
+//     $userLat = $request->input('lat', 28.6139);
+//     $userLng = $request->input('lng', 77.2090);
+
+//     $events = Event::select('*')
+//         ->selectRaw("(6371000 * 2 * ASIN(SQRT(POWER(SIN(RADIANS(latitude - ?)/2),2) + COS(RADIANS(?)) * COS(RADIANS(latitude)) * POWER(SIN(RADIANS(longitude - ?)/2),2)))) AS distance",
+//         [$userLat, $userLat, $userLng])
+//         ->orderBy('created_at','desc')
+//          ->withCount('comments')
+//         ->get();
+
+//     $locale = session('locale', 'en'); // current language
+
+//     foreach ($events as $event) {
+//         // distance
+//         if ($event->distance >= 1000) {
+//             $event->distance_text = round($event->distance / 1000, 1) . ' km away';
+//         } else {
+//             $event->distance_text = round($event->distance) . ' m away';
+//         }
+
+//         // time ago
+//         $event->time_ago = \Carbon\Carbon::parse($event->reported_at)->diffForHumans();
+
+//         // translate if not English
+//         if ($locale != 'en') {
+//             $tr = new GoogleTranslate($locale);
+//             $event->title = $tr->translate($event->title);
+//             $event->description = $tr->translate($event->description);
+//         }
+
+
+//         // ================== Blogs ===================
+//     $blogs = Blog::with('blogCategories')
+//         ->where('blog_status', 1)
+//         ->orderBy('created_at', 'desc')
+//         ->take(6) // latest 6 blogs
+//         ->get();
+//     }
+
+//     return view('front.home.index', compact('events', 'blogs'));
+// }
+
 public function index(Request $request)
-{
-    $userLat = $request->input('lat', 28.6139);
-    $userLng = $request->input('lng', 77.2090);
+    {
+        $events = Event::orderBy('created_at', 'desc')->withCount('comments')->get();
+        $locale = session('locale', 'en');
 
-    $events = Event::select('*')
-        ->selectRaw("(6371000 * 2 * ASIN(SQRT(POWER(SIN(RADIANS(latitude - ?)/2),2) + COS(RADIANS(?)) * COS(RADIANS(latitude)) * POWER(SIN(RADIANS(longitude - ?)/2),2)))) AS distance",
-        [$userLat, $userLat, $userLng])
-        ->orderBy('created_at','desc')
-         ->withCount('comments')
-        ->get();
+        $userLat = $request->input('latitude', null);
+        $userLng = $request->input('longitude', null);
 
-    $locale = session('locale', 'en'); // current language
 
-    foreach ($events as $event) {
-        // distance
-        if ($event->distance >= 1000) {
-            $event->distance_text = round($event->distance / 1000, 1) . ' km away';
+        foreach ($events as $event) {
+            if ($locale != 'en') {
+                $tr = new GoogleTranslate($locale);
+                $event->title = $tr->translate($event->title);
+                $event->description = $tr->translate($event->description);
+            }
+        }
+
+        // Calculate distance via Google Maps API
+        if ($userLat && $userLng) {
+
+            // Prepare destinations for Distance Matrix API
+            $destinations = $events->map(function ($e) {
+                return $e->latitude . ',' . $e->longitude;
+            })->implode('|');
+
+            $apiKey = env('GOOGLE_MAPS_KEY');
+
+            $url = "https://maps.googleapis.com/maps/api/distancematrix/json?origins={$userLat},{$userLng}&destinations={$destinations}&mode=driving&key={$apiKey}";
+
+            $response = Http::get($url)->json();
+            // dd($response);
+
+            // Check API response
+            if (isset($response['rows'][0]['elements'])) {
+                foreach ($events as $index => $event) {
+                    $element = $response['rows'][0]['elements'][$index];
+
+                    if (isset($element['status']) && $element['status'] == 'OK') {
+                        $event->distance_text = $element['distance']['text'];
+                        $event->distance_value = $element['distance']['value'];
+                    } else {
+                        $event->distance_text = 'N/A';
+                        $event->distance_value = null;
+                    }
+                }
+            }
         } else {
-            $event->distance_text = round($event->distance) . ' m away';
+            foreach ($events as $event) {
+                $event->distance_text = 'N/A';
+            }
         }
 
-        // time ago
-        $event->time_ago = \Carbon\Carbon::parse($event->reported_at)->diffForHumans();
+        $blogs = Blog::with('blogCategories')
+            ->where('blog_status', 1)
+            ->orderBy('created_at', 'desc')
+            ->take(6)
+            ->get();
 
-        // translate if not English
-        if ($locale != 'en') {
-            $tr = new GoogleTranslate($locale);
-            $event->title = $tr->translate($event->title);
-            $event->description = $tr->translate($event->description);
-        }
-
-
-        // ================== Blogs ===================
-    $blogs = Blog::with('blogCategories')
-        ->where('blog_status', 1)
-        ->orderBy('created_at', 'desc')
-        ->take(6) // latest 6 blogs
-        ->get();
+        return view('front.home.index', compact('events', 'blogs'));
     }
 
-    return view('front.home.index', compact('events', 'blogs'));
+
+    public function homeDistance(Request $request)
+{
+    $userLat = $request->lat;
+    $userLng = $request->lng;
+
+    $apiKey = env('GOOGLE_MAPS_KEY');
+
+    $events = Event::select('id', 'latitude', 'longitude')->get();
+
+    $result = [];
+
+    foreach ($events as $event) {
+
+        $origin = $userLat . ',' . $userLng;
+        $destination = $event->latitude . ',' . $event->longitude;
+
+        $url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins=$origin&destinations=$destination&mode=driving&key=$apiKey";
+
+        $response = file_get_contents($url);
+        $data = json_decode($response, true);
+
+        if (isset($data['rows'][0]['elements'][0]['distance']['value'])) {
+            $km = round($data['rows'][0]['elements'][0]['distance']['value'] / 1000, 1);
+            $result[$event->id] = ['distance' => $km . " Km"];
+        } else {
+            $result[$event->id] = ['distance' => "N/A"];
+        }
+    }
+
+    return response()->json($result);
 }
 
 

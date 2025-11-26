@@ -160,7 +160,8 @@
 
                                         <div class="card-body">
                                             <p class="mb-2">
-                                                {{ $event->distance_text }} | {{ $event->time_ago }}
+                                                <span id="distance-{{ $event->id }}">Loading...</span> |
+                                                {{ $event->created_at->diffForHumans() }}
                                             </p>
 
                                             <h2 class="card-title fs-5">
@@ -583,6 +584,41 @@
                 fetch(`/events?lat=${lat}&lng=${lng}`)
                     .then(res => res.json())
                     .then(data => console.log(data));
+            });
+        </script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+
+                if (!navigator.geolocation) return;
+
+                navigator.geolocation.getCurrentPosition(function(position) {
+
+                    let lat = position.coords.latitude;
+                    let lng = position.coords.longitude;
+
+                    fetch("{{ url('/home-distance') }}", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                            },
+                            body: JSON.stringify({
+                                lat: lat,
+                                lng: lng
+                            })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            Object.keys(data).forEach(function(id) {
+
+                                let distElm = document.getElementById("distance-" + id);
+
+                                if (!distElm) return;
+
+                                distElm.innerHTML = data[id].distance ?? "N/A";
+                            });
+                        });
+                });
             });
         </script>
     @endpush
