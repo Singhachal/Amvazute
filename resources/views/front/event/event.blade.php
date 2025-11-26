@@ -91,8 +91,8 @@
                                     @endforeach --}}
                                     @php
                                         // Add default label if it's not already in the list
-                                        if (!$labels->contains('General')) {
-                                            $labels->push('General');
+if (!$labels->contains('General')) {
+    $labels->push('General');
                                         }
                                     @endphp
 
@@ -143,9 +143,9 @@
                                 alt="Event Image">
                             <div class="card-body">
                                 <p class="mb-2">
-                                    <span class="distance" data-lat="{{ $event->latitude }}"
-                                        data-lng="{{ $event->longitude }}">Calculating...</span> |
-                                    {{ \Carbon\Carbon::parse($event->reported_at)->diffForHumans() }}
+                                    <span class="distance" data-event-id="{{ $event->id }}">Calculating...</span>
+                                    <span class="duration" data-event-id="{{ $event->id }}"></span>
+
                                 </p>
                                 <h2 class="card-title fs-5">
                                     <a href="#">{{ $event->title }}</a>
@@ -238,39 +238,42 @@
             </div>
         </div>
     </section>
-
     <script>
-        function haversine(lat1, lon1, lat2, lon2) {
-            const R = 6371; // km
-            const dLat = (lat2 - lat1) * Math.PI / 180;
-            const dLon = (lon2 - lon1) * Math.PI / 180;
-            const a =
-                Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-                Math.sin(dLon / 2) * Math.sin(dLon / 2);
-            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-            return R * c;
-        }
+document.addEventListener('DOMContentLoaded', function () {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            let lat = position.coords.latitude;
+            let lng = position.coords.longitude;
+            console.log('User location:', position.coords.latitude, position.coords.longitude);
 
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function(position) {
-                const userLat = position.coords.latitude;
-                const userLng = position.coords.longitude;
+            document.querySelectorAll('.distance').forEach(function(span) {
+                let eventId = span.dataset.eventId;
 
-                document.querySelectorAll('.distance').forEach(function(span) {
-                    const eventLat = parseFloat(span.dataset.lat);
-                    const eventLng = parseFloat(span.dataset.lng);
-
-                    const dist = haversine(userLat, userLng, eventLat, eventLng);
-                    span.textContent = (dist * 1000 < 1000) ?
-                        `${Math.round(dist * 1000)}m away` :
-                        `${dist.toFixed(2)} km away`;
+                fetch("{{ route('event.distance') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                    },
+                    body: JSON.stringify({ latitude: lat, longitude: lng, event_id: eventId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if(data.success){
+                        span.textContent = data.distance + ' | ' + data.duration;
+                    } else {
+                        span.textContent = 'N/A';
+                    }
                 });
-            }, function(error) {
-                console.error('Error getting location:', error);
             });
-        } else {
-            console.error('Geolocation not supported by this browser.');
-        }
-    </script>
+
+        }, function(error) {
+            console.error('Geolocation error:', error);
+        });
+    } else {
+        console.error('Geolocation not supported by browser');
+    }
+});
+</script>
+
 @endsection
