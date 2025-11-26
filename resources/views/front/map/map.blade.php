@@ -195,8 +195,8 @@
             </div>
         </div>
     </section>
-    <script src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_KEY') }}&libraries=places"></script>
-    <script>
+    {{-- <script src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_KEY') }}&libraries=places"></script> --}}
+    {{-- <script>
         document.addEventListener("DOMContentLoaded", function() {
 
             if (navigator.geolocation) {
@@ -280,7 +280,7 @@
             });
 
         });
-    </script>
+    </script> --}}
     {{-- <script>
         document.addEventListener("DOMContentLoaded", function() {
 
@@ -355,7 +355,7 @@
         });
     </script> --}}
 
-    <script>
+    {{-- <script>
 document.addEventListener("DOMContentLoaded", function () {
 
     let eventLat = parseFloat("{{ $eventMap->latitude }}");
@@ -448,6 +448,103 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 });
+</script> --}}
+<script src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_KEY') }}"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    let eventLat = parseFloat("{{ $eventMap->latitude }}");
+    let eventLng = parseFloat("{{ $eventMap->longitude }}");
+
+    let eventLocation = { lat: eventLat, lng: eventLng };
+
+    // MAP INITIALIZE
+    const map = new google.maps.Map(document.getElementById("map"), {
+        zoom: 15,
+        center: eventLocation
+    });
+
+    // Event marker
+    new google.maps.Marker({
+        position: eventLocation,
+        map: map,
+        title: "Event Location"
+    });
+
+    // Directions service
+    const directionsService = new google.maps.DirectionsService();
+    const directionsRenderer = new google.maps.DirectionsRenderer({
+        map: map,
+        suppressMarkers: false,
+        preserveViewport: true
+    });
+
+    let userMarker = null;
+
+    // REAL-TIME LOCATION
+    if (navigator.geolocation) {
+        navigator.geolocation.watchPosition(
+            function (pos) {
+                let userLat = pos.coords.latitude;
+                let userLng = pos.coords.longitude;
+                let userLocation = { lat: userLat, lng: userLng };
+
+                // Add or update user marker
+                if (!userMarker) {
+                    userMarker = new google.maps.Marker({
+                        position: userLocation,
+                        map: map,
+                        icon: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+                        title: "Your Live Location"
+                    });
+                } else {
+                    userMarker.setPosition(userLocation);
+                }
+
+                // Draw LIVE route
+                directionsService.route(
+                    {
+                        origin: userLocation,
+                        destination: eventLocation,
+                        travelMode: google.maps.TravelMode.DRIVING
+                    },
+                    function (res, status) {
+                        if (status === "OK") {
+                            directionsRenderer.setDirections(res);
+                        }
+                    }
+                );
+
+                // Update distance/time
+                updateDistance(userLat, userLng);
+
+            },
+            function () {
+                $("#distanceTime").text("GPS Blocked");
+            },
+            {
+                enableHighAccuracy: true,
+                maximumAge: 0,
+                timeout: 5000
+            }
+        );
+    }
+
+    function updateDistance(lat, lng) {
+        $.post("{{ route('map.get.distance') }}", {
+            _token: "{{ csrf_token() }}",
+            lat: lat,
+            lng: lng,
+            eventLat: "{{ $eventMap->latitude }}",
+            eventLng: "{{ $eventMap->longitude }}"
+        }, function (res) {
+            $("#distanceTime").text(res.distance + " | " + res.duration);
+        });
+    }
+
+});
 </script>
+
 
 @endsection
