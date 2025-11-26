@@ -449,46 +449,46 @@ document.addEventListener("DOMContentLoaded", function () {
 
 });
 </script> --}}
-<script src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_KEY') }}"></script>
 
+<script src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_KEY') }}"></script>
 <script>
 document.addEventListener("DOMContentLoaded", function () {
 
-    let eventLat = parseFloat("{{ $eventMap->latitude }}");
-    let eventLng = parseFloat("{{ $eventMap->longitude }}");
+    const eventLat = parseFloat("{{ $eventMap->latitude }}");
+    const eventLng = parseFloat("{{ $eventMap->longitude }}");
+    const eventLocation = { lat: eventLat, lng: eventLng };
 
-    let eventLocation = { lat: eventLat, lng: eventLng };
-
-    // MAP INITIALIZE
     const map = new google.maps.Map(document.getElementById("map"), {
-        zoom: 15,
-        center: eventLocation
+        center: eventLocation,
+        zoom: 15
     });
 
     // Event marker
-    new google.maps.Marker({
+    const eventMarker = new google.maps.Marker({
         position: eventLocation,
         map: map,
         title: "Event Location"
     });
 
-    // Directions service
     const directionsService = new google.maps.DirectionsService();
     const directionsRenderer = new google.maps.DirectionsRenderer({
         map: map,
-        suppressMarkers: false,
-        preserveViewport: true
+        suppressMarkers: true
     });
 
+    // User marker
     let userMarker = null;
 
-    // REAL-TIME LOCATION
+    // Store previous step index for voice guidance
+    let prevStepIndex = -1;
+
+    // Start watching user location
     if (navigator.geolocation) {
         navigator.geolocation.watchPosition(
             function (pos) {
-                let userLat = pos.coords.latitude;
-                let userLng = pos.coords.longitude;
-                let userLocation = { lat: userLat, lng: userLng };
+                const userLat = pos.coords.latitude;
+                const userLng = pos.coords.longitude;
+                const userLocation = { lat: userLat, lng: userLng };
 
                 // Add or update user marker
                 if (!userMarker) {
@@ -496,48 +496,69 @@ document.addEventListener("DOMContentLoaded", function () {
                         position: userLocation,
                         map: map,
                         icon: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
-                        title: "Your Live Location"
+                        title: "Your Location"
                     });
                 } else {
                     userMarker.setPosition(userLocation);
                 }
 
-                // Draw LIVE route
-                directionsService.route(
-                    {
-                        origin: userLocation,
-                        destination: eventLocation,
-                        travelMode: google.maps.TravelMode.DRIVING
-                    },
-                    function (res, status) {
-                        if (status === "OK") {
-                            directionsRenderer.setDirections(res);
-                        }
+                map.panTo(userLocation);
+
+                // Get route from user -> event
+                directionsService.route({
+                    origin: userLocation,
+                    destination: eventLocation,
+                    travelMode: google.maps.TravelMode.DRIVING,
+                    drivingOptions: { departureTime: new Date() }
+                }, function (result, status) {
+                    if (status === "OK") {
+                        directionsRenderer.setDirections(result);
+
+                        // Optional: step-by-step guidance
+                        const steps = result.routes[0].legs[0].steps;
+                        steps.forEach((step, index) => {
+                            // check if user is close to this step
+                            const stepLat = step.end_location.lat();
+                            const stepLng = step.end_location.lng();
+                            const distance = google.maps.geometry.spherical.computeDistanceBetween(
+                                new google.maps.LatLng(userLat, userLng),
+                                new google.maps.LatLng(stepLat, stepLng)
+                            );
+
+                            if (distance < 30 && prevStepIndex < index) { // within 30 meters
+                                prevStepIndex = index;
+                                // Voice guidance
+                                if ('speechSynthesis' in window) {
+                                    const msg = new SpeechSynthesisUtterance(step.instructions.replace(/<[^>]+>/g, ''));
+                                    window.speechSynthesis.speak(msg);
+                                }
+                            }
+                        });
+
+                        // Update distance/time UI
+                        updateDistanceUI(userLat, userLng);
+
+                    } else {
+                        console.warn("Directions error:", status);
                     }
-                );
-
-                // Update distance/time
-                updateDistance(userLat, userLng);
+                });
 
             },
-            function () {
-                $("#distanceTime").text("GPS Blocked");
+            function (err) {
+                console.error("GPS blocked", err);
+                $("#distanceTime").text("GPS blocked");
             },
-            {
-                enableHighAccuracy: true,
-                maximumAge: 0,
-                timeout: 5000
-            }
+            { enableHighAccuracy: true, maximumAge: 0, timeout: 5000 }
         );
     }
 
-    function updateDistance(lat, lng) {
+    function updateDistanceUI(lat, lng) {
         $.post("{{ route('map.get.distance') }}", {
             _token: "{{ csrf_token() }}",
             lat: lat,
             lng: lng,
-            eventLat: "{{ $eventMap->latitude }}",
-            eventLng: "{{ $eventMap->longitude }}"
+            eventLat: eventLat,
+            eventLng: eventLng
         }, function (res) {
             $("#distanceTime").text(res.distance + " | " + res.duration);
         });
