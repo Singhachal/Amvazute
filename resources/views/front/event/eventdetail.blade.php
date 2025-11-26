@@ -123,7 +123,8 @@
                     <div class="row d-flex justify-content-between">
                     <div class="col-md-6 col-12">
                         <span class="badge bg-info-color ">{{ $event->label }}</span>
-                        <span>{{ $event->distance_text }} | {{ $event->time_ago }}</span>
+                        {{-- <span>5km | 2 hours</span> --}}
+                        <span id="distanceTime">Loading...</span>
                         <span><b>{{ $event->user->name ?? 'Unknown' }}</b></span>
                         {{-- <a href="/map" class="fw-semibold text-decoration-underline text-dark">| Get Map View</a> --}}
                         <a href="{{ route('events.map.single', $event->id) }}"
@@ -280,5 +281,46 @@
                 }
             }
         </script>
+
+        <script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    if (navigator.geolocation) {
+
+        navigator.geolocation.getCurrentPosition(function (position) {
+            let lat = position.coords.latitude;
+            let lng = position.coords.longitude;
+
+            let eventLat = "{{ $event->latitude }}";
+            let eventLng = "{{ $event->longitude }}";
+
+            $.ajax({
+                url: "{{ route('get.distance') }}",
+                type: "POST",
+                data: {
+                    lat: lat,
+                    lng: lng,
+                    eventLat: eventLat,
+                    eventLng: eventLng,
+                    _token: "{{ csrf_token() }}"
+                },
+                success: function (res) {
+                    $("#distanceTime").text(res.distance + " | " + res.duration);
+                },
+                error: function () {
+                    $("#distanceTime").text("N/A");
+                }
+            });
+
+        }, function () {
+            $("#distanceTime").text("Location blocked");
+        });
+
+    } else {
+        $("#distanceTime").text("No GPS");
+    }
+});
+</script>
+
     @endpush
 @endsection

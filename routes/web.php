@@ -46,6 +46,7 @@ Route::get('event',[HomeController::class,'event'])->name('event');
 Route::post('event-distance', [HomeController::class, 'calculateDistance'])->name('event.distance');
 Route::get('about',[HomeController::class,'about'])->name('about');
 Route::get('eventdetail/{id}', [HomeController::class, 'eventdetail'])->name('eventdetail');
+Route::post('/get-distance', [HomeController::class, 'getDistanceAjax'])->name('get.distance');
 Route::get('term',[HomeController::class,'term'])->name('term');
 Route::get('privacy',[HomeController::class,'privacy'])->name('privacy');
 Route::get('community',[HomeController::class,'community'])->name('community');
@@ -92,6 +93,8 @@ Route::post('/enquiry-form', [HomeController::class, 'storeEnquiryForm'])->name(
 
 // Show map for one event + related
 Route::get('/map/{id}', [HomeController::class, 'showEventMap'])->name('events.map.single');
+Route::post('/map/get-distance', [HomeController::class, 'getMapDistance'])->name('map.get.distance');
+
 
 //  Store Post
 Route::post('/eventFront/store', [HomeController::class, 'storePost'])->name('eventFront.store');

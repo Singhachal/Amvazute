@@ -237,190 +237,83 @@ class HomeController extends Controller
 
 
 
-
-
-
-    //    public function eventdetail()
-    //    {
-    //       return view('front.event.eventdetail');
-    //    }
-
-    // public function eventdetail($id)
-    // {
-    //     // Fetch event with all associated media
-    //     $event = Event::with('media')->findOrFail($id);
-    //     // dd($event);
-
-    //     return view('front.event.eventdetail', compact('event'));
-    // }
-
-    // public function eventdetail($id)
-    // {
-    //     // Your current location (you must pass it to the controller via request)
-    //     $userLat = request()->get('lat');  // Example: from ?lat=...
-    //     $userLng = request()->get('lng');  // Example: from ?lng=...
-
-    //     // Fetch event with all associated media
-    //     $event = Event::with('media')->findOrFail($id);
-
-    //     // Calculate distance if both sets of coordinates exist
-    //     if ($userLat && $userLng && $event->latitude && $event->longitude) {
-    //         $event->distance_text = $this->calculateDistance($userLat, $userLng, $event->latitude, $event->longitude);
-    //     } else {
-    //         $event->distance_text = 'Distance N/A';
-    //     }
-
-    //     // Time difference (assuming reported_at exists, fallback to created_at)
-    //     $event->time_ago = ($event->reported_at ?? $event->created_at)?->diffForHumans() ?? 'N/A';
-
-    //     return view('front.event.eventdetail', compact('event'));
-    // }
-
-
-    // public function eventdetail($id)
-    // {
-    //     // Your current location (optional)
-    //     $userLat = request()->get('lat');  // Example: from ?lat=...
-    //     $userLng = request()->get('lng');  // Example: from ?lng=...
-
-    //     // Fetch event with all associated media
-    //     $event = Event::with('media')->findOrFail($id);
-
-    //     // Calculate distance if coordinates exist
-    //     if ($userLat && $userLng && $event->latitude && $event->longitude) {
-    //         $event->distance_text = $this->calculateDistance($userLat, $userLng, $event->latitude, $event->longitude);
-    //     } else {
-    //         $event->distance_text = 'Distance N/A';
-    //     }
-
-    //     // Time difference (reported_at or created_at)
-    //     $event->time_ago = ($event->reported_at ?? $event->created_at)?->diffForHumans() ?? 'N/A';
-
-    //     // Fetch approved comments for this event
-    //     $comments = Comment::with('user') // eager load user for name
-    //                 ->where('post_id', $id)
-    //                 ->where('status', 1) // only approved comments
-    //                 ->latest() // show newest first
-    //                 ->get();
-    //                 // dd($comments);
-
-    //     return view('front.event.eventdetail', compact('event', 'comments'));
-    // }
-
-
-    // /**
-    //  * Calculate distance between two coordinates using Haversine formula
-    //  */
-    // private function calculateDistance($lat1, $lon1, $lat2, $lon2)
-    // {
-    //     $earthRadius = 6371000; // meters
-
-    //     $latFrom = deg2rad($lat1);
-    //     $lonFrom = deg2rad($lon1);
-    //     $latTo = deg2rad($lat2);
-    //     $lonTo = deg2rad($lon2);
-
-    //     $latDelta = $latTo - $latFrom;
-    //     $lonDelta = $lonTo - $lonFrom;
-
-    //     $angle = 2 * asin(sqrt(pow(sin($latDelta / 2), 2) +
-    //         cos($latFrom) * cos($latTo) * pow(sin($lonDelta / 2), 2)));
-
-    //     $distance = $earthRadius * $angle;
-
-    //     return $distance < 1000
-    //         ? round($distance) . 'm away'
-    //         : round($distance / 1000, 2) . 'km away';
-    // }
-
-    // public function eventdetail(Request $request, $id)
-    // {
-    //     // Get user's location from query params or fallback default (same as index)
-    //     $userLat = $request->input('lat', 28.6139); // Default New Delhi
-    //     $userLng = $request->input('lng', 77.2090); // Default New Delhi
-
-    //     // Fetch event
-    //     $event = Event::with('media')->findOrFail($id);
-
-    //     // Calculate distance using same Haversine formula as index
-    //     $distance = 6371000 * 2 * asin(sqrt(
-    //         pow(sin(deg2rad($event->latitude - $userLat) / 2), 2) +
-    //         cos(deg2rad($userLat)) * cos(deg2rad($event->latitude)) *
-    //         pow(sin(deg2rad($event->longitude - $userLng) / 2), 2)
-    //     ));
-
-    //     $event->distance_text = $distance >= 1000
-    //         ? round($distance / 1000, 2) . ' km away'
-    //         : round($distance) . ' m away';
-
-    //     // Time ago
-    //     $event->time_ago = ($event->reported_at ?? $event->created_at)?->diffForHumans() ?? 'N/A';
-
-    //     $liked = false;
-    //     if (auth()->check()) {
-    //         $liked = $event->likedByUser(auth()->id());
-    //     }
-
-    //     $totalLikes = $event->likes->count();
-
-    //     // Approved comments
-    //     $comments = Comment::with('user')
-    //         ->where('post_id', $id)
-    //         ->where('status', 1)
-    //         ->latest()
-    //         ->get();
-
-    //     return view('front.event.eventdetail', compact('event', 'comments', 'liked', 'totalLikes'));
-    // }
-
     public function eventdetail(Request $request, $id)
-    {
-        // Get current locale (default to English)
-        $locale = session('locale', 'en');
+{
+    $locale = session('locale', 'en');
 
-        // User location
-        $userLat = $request->input('lat', 28.6139);
-        $userLng = $request->input('lng', 77.2090);
+    // Fetch event with relations
+    $event = Event::with('media', 'user')->findOrFail($id);
 
-        // Fetch event
-        $event = Event::with('media', 'user')->findOrFail($id);
+    // Time ago
+    $event->time_ago = ($event->reported_at ?? $event->created_at)?->diffForHumans() ?? 'N/A';
 
-        // Distance calculation
-        $distance = 6371000 * 2 * asin(sqrt(
-            pow(sin(deg2rad($event->latitude - $userLat) / 2), 2) +
-                cos(deg2rad($userLat)) * cos(deg2rad($event->latitude)) *
-                pow(sin(deg2rad($event->longitude - $userLng) / 2), 2)
-        ));
-
-        $event->distance_text = $distance >= 1000
-            ? round($distance / 1000, 2) . ' km away'
-            : round($distance) . ' m away';
-
-        // Time ago
-        $event->time_ago = ($event->reported_at ?? $event->created_at)?->diffForHumans() ?? 'N/A';
-
-        // Translate only text fields if locale is not English
-        if ($locale != 'en') {
-            $tr = new GoogleTranslate($locale);
-            $event->title = $tr->translate($event->title);
-            $event->description = $tr->translate($event->description);
-        }
-
-        // Likes
-        $liked = auth()->check() ? $event->likedByUser(auth()->id()) : false;
-        $totalLikes = $event->likes->count();
-
-        // Approved comments
-        $comments = Comment::with('user')
-            ->where('post_id', $id)
-            ->where('status', 1)
-            ->latest()
-            ->get();
-
-        $commentCount = $comments->count();
-
-        return view('front.event.eventdetail', compact('event', 'comments', 'commentCount', 'liked', 'totalLikes'));
+    // Translate if locale is not English
+    if ($locale != 'en') {
+        $tr = new GoogleTranslate($locale);
+        $event->title = $tr->translate($event->title);
+        $event->description = $tr->translate($event->description);
     }
+
+    // Likes
+    $liked = auth()->check() ? $event->likedByUser(auth()->id()) : false;
+    $totalLikes = $event->likes->count();
+
+    // Approved comments
+    $comments = Comment::with('user')
+        ->where('post_id', $id)
+        ->where('status', 1)
+        ->latest()
+        ->get();
+    $commentCount = $comments->count();
+
+    return view('front.event.eventdetail', compact('event', 'comments', 'commentCount', 'liked', 'totalLikes'));
+}
+
+
+public function getDistanceAjax(Request $request)
+{
+    $userLat = $request->lat;
+    $userLng = $request->lng;
+    $eventLat = $request->eventLat;
+    $eventLng = $request->eventLng;
+
+    if (!$userLat || !$userLng || !$eventLat || !$eventLng) {
+        return response()->json([
+            'distance' => 'N/A',
+            'duration' => 'N/A'
+        ]);
+    }
+
+    $apiKey = env('GOOGLE_MAPS_KEY');
+
+    $url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=metric".
+           "&origins={$userLat},{$userLng}".
+           "&destinations={$eventLat},{$eventLng}".
+           "&key={$apiKey}";
+
+    $response = file_get_contents($url);
+    $data = json_decode($response, true);
+
+    if (!empty($data['rows'][0]['elements'][0]['status']) &&
+        $data['rows'][0]['elements'][0]['status'] == "OK") {
+
+        $distanceText = $data['rows'][0]['elements'][0]['distance']['text'];
+        $durationText = $data['rows'][0]['elements'][0]['duration']['text'];
+
+        return response()->json([
+            'distance' => $distanceText,
+            'duration' => $durationText
+        ]);
+    }
+
+    return response()->json([
+        'distance' => 'N/A',
+        'duration' => 'N/A'
+    ]);
+}
+
+
+
 
 
     // public function eventdetail(Request $request, $id)
@@ -838,223 +731,66 @@ class HomeController extends Controller
 
 
 
-    // public function showEventMap($id, Request $request)
-    //     {
-    //         // 1. Get the event
-    //         $eventMap = Event::findOrFail($id);
-    //         // 4. Pass data to view
-    //         return view('front.map.map', ['event' => $eventMap]);
-    //     }
+public function showEventMap($id)
+{
+    $eventMap = Event::with('media')->findOrFail($id);
 
-    // public function showEventMap($id, Request $request)
-    // {
-    //     $eventMap = Event::with('media')->findOrFail($id); // load related media if exists
-    //     return view('front.map.map', ['event' => $eventMap]);
-    // }
+    $relatedPosts = Event::with('media')
+        ->where('id', '!=', $id)
+        ->latest()
+        ->take(3)
+        ->get();
 
-    // public function showEventMap($id, Request $request)
-    // {
-    //     $eventMap = Event::with('media')->findOrFail($id);
-
-    //     // Example: get 3 other events for related posts
-    //     $relatedPosts = Event::with('media')
-    //         ->where('id', '!=', $id)
-    //         ->latest()
-    //         ->take(3)
-    //         ->get();
-
-    //     return view('front.map.map', [
-    //         'event' => $eventMap,
-    //         'relatedPosts' => $relatedPosts
-    //     ]);
-    // }
-
-    // public function showEventMap($id, Request $request)
-    // {
-    //     $eventMap = Event::with('media')->findOrFail($id);
-
-    //     $userLat = $request->input('lat');
-    //     $userLng = $request->input('lng');
-
-    //     $distance = null;
-
-    //     if ($userLat && $userLng) {
-    //         $distance = $this->calculateDistances(
-    //             $userLat, $userLng,
-    //             $eventMap->latitude, $eventMap->longitude
-    //         );
-    //     }
-
-    //     $relatedPosts = Event::with('media')
-    //         ->where('id', '!=', $id)
-    //         ->latest()
-    //         ->take(3)
-    //         ->get();
-
-    //     return view('front.map.map', [
-    //         'event' => $eventMap,
-    //         'relatedPosts' => $relatedPosts,
-    //         'distance' => $distance
-    //     ]);
-    // }
+    return view('front.map.map', compact('eventMap', 'relatedPosts'));
+}
 
 
+public function getMapDistance(Request $request)
+{
+    $userLat = $request->lat;
+    $userLng = $request->lng;
+    $eventLat = $request->eventLat;
+    $eventLng = $request->eventLng;
 
-
-    // public function showEventMap($id, Request $request)
-    // {
-    //     $eventMap = Event::with('media')->findOrFail($id);
-
-    //     $userLat = $request->input('lat');
-    //     $userLng = $request->input('lng');
-
-    //     $distance = null;
-
-    //     if ($userLat && $userLng) {
-    //         $distance = $this->calculateDistances(
-    //             $userLat, $userLng,
-    //             $eventMap->latitude, $eventMap->longitude
-    //         );
-    //     }
-
-    //     $relatedPosts = Event::with('media')
-    //         ->where('id', '!=', $id)
-    //         ->latest()
-    //         ->take(3)
-    //         ->get();
-
-    //     // Add distance to each related post
-    //     if ($userLat && $userLng) {
-    //         foreach ($relatedPosts as $related) {
-    //             $related->distance = $this->calculateDistances(
-    //                 $userLat, $userLng,
-    //                 $related->latitude, $related->longitude
-    //             );
-    //         }
-    //     }
-
-    //     return view('front.map.map', [
-    //         'event' => $eventMap,
-    //         'relatedPosts' => $relatedPosts,
-    //         'distance' => $distance
-    //     ]);
-    // }
-
-    // private function calculateDistances($lat1, $lon1, $lat2, $lon2)
-    // {
-    //     $earthRadius = 6371; // km
-
-    //     $dLat = deg2rad($lat2 - $lat1);
-    //     $dLon = deg2rad($lon2 - $lon1);
-
-    //     $a = sin($dLat / 2) * sin($dLat / 2) +
-    //          cos(deg2rad($lat1)) * cos(deg2rad($lat2)) *
-    //          sin($dLon / 2) * sin($dLon / 2);
-
-    //     $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
-
-    //     $distance = $earthRadius * $c;
-
-    //     return round($distance, 2); // km
-    // }
-
-
-    public function showEventMap($id, Request $request)
-    {
-        $eventMap = Event::with('media')->findOrFail($id);
-        // dd($eventMap);
-
-        $userLat = $request->input('lat', 28.6139);
-        $userLng = $request->input('lng', 77.2090);
-
-
-
-        $distance_text = $this->calculateDistance(
-            $userLat,
-            $userLng,
-            $eventMap->latitude,
-            $eventMap->longitude
-        );
-
-        $relatedPosts = Event::with('media')
-            ->where('id', '!=', $id)
-            ->latest()
-            ->take(3)
-            ->get();
-
-        foreach ($relatedPosts as $related) {
-            $related->distance_text = $this->calculateDistance(
-                $userLat,
-                $userLng,
-                $related->latitude,
-                $related->longitude
-            );
-        }
-
-        return view('front.map.map', compact('eventMap',  'relatedPosts', 'distance_text', 'userLat', 'userLng'));
+    if (!$userLat || !$userLng || !$eventLat || !$eventLng) {
+        return response()->json([
+            'distance' => 'N/A',
+            'duration' => 'N/A'
+        ]);
     }
 
-    private function calculateDistances($lat1, $lon1, $lat2, $lon2)
-    {
-        $earthRadius = 6371000; // meters
+    $apiKey = env('GOOGLE_MAPS_KEY');
 
-        $latFrom = deg2rad($lat1);
-        $lonFrom = deg2rad($lon1);
-        $latTo   = deg2rad($lat2);
-        $lonTo   = deg2rad($lon2);
+    $url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=metric".
+           "&origins={$userLat},{$userLng}".
+           "&destinations={$eventLat},{$eventLng}".
+           "&key={$apiKey}";
 
-        $latDelta = $latTo - $latFrom;
-        $lonDelta = $lonTo - $lonFrom;
+    $response = file_get_contents($url);
+    $data = json_decode($response, true);
 
-        $angle = 2 * asin(sqrt(
-            pow(sin($latDelta / 2), 2) +
-                cos($latFrom) * cos($latTo) *
-                pow(sin($lonDelta / 2), 2)
-        ));
-
-        $distance = $earthRadius * $angle;
-
-        return $distance < 1000
-            ? round($distance) . ' m away'
-            : round($distance / 1000, 2) . ' km away';
+    if (
+        isset($data['rows'][0]['elements'][0]['status']) &&
+        $data['rows'][0]['elements'][0]['status'] == "OK"
+    ) {
+        return response()->json([
+            'distance' => $data['rows'][0]['elements'][0]['distance']['text'],
+            'duration' => $data['rows'][0]['elements'][0]['duration']['text']
+        ]);
     }
 
+    return response()->json([
+        'distance' => 'N/A',
+        'duration' => 'N/A'
+    ]);
+}
 
 
-    //  public function storePost(Request $request)
-    //     {
-    //         $request->validate([
-    //             'title'     => 'required|string|max:255',
-    //             'caption'   => 'nullable|string',
-    //             'latitude'  => 'required|numeric',
-    //             'longitude' => 'required|numeric',
-    //             'postType'  => 'required|string',
-    //             'terms'     => 'accepted',
-    //             'file'      => 'nullable|file|mimes:jpg,jpeg,png,mp4|max:20480'
-    //         ]);
-
-    //         $event = new Event();
-    //         $event->title       = $request->title;
-    //         $event->description = $request->caption;
-    //         $event->latitude    = $request->latitude;
-    //         $event->longitude   = $request->longitude;
-    //         $event->media_type  = $request->postType;
-
-    //         // Save media if uploaded
-    //         if ($request->hasFile('file')) {
-    //             $fileName = time().'_'.$request->file('file')->getClientOriginalName();
-    //             $request->file('file')->move(public_path('uploads/events'), $fileName);
-    //             $event->media_path = 'uploads/events/' . $fileName;
-    //         }
-
-    //         $event->status      = 'active';
-    //         $event->reported_at = now();
-    //         $event->save();
 
 
-    //         return response()->json(['status'=>'success', 'message'=>'Event posted successfully!']);
 
-    //     }
+
+
 
 
 
