@@ -39,6 +39,7 @@ use Stichoza\GoogleTranslate\GoogleTranslate;
 
 
 Route::get('/',[HomeController::class,'index'])->name('home');
+Route::post('/home-distance', [HomeController::class, 'homeDistance']);
 Route::get('contact',[HomeController::class,'contact'])->name('contact');
 Route::get('create-post',[HomeController::class,'createpost'])->name('create-post');
 Route::get('event',[HomeController::class,'event'])->name('event');

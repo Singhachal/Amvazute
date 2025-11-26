@@ -71,7 +71,7 @@
             <button class="btn-primary-hero" type="submit">Post Now</button>
           </form> --}}
 
-                    <form action="{{ route('eventFront.store') }}" method="POST" enctype="multipart/form-data">
+                    {{-- <form action="{{ route('eventFront.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <div class="row g-3 mb-3">
                             <div class="col-md-3">
@@ -132,6 +132,69 @@
                         </div>
 
                         <button class="btn-primary-hero" type="submit">Post Now</button>
+                    </form> --}}
+
+                    <form action="{{ route('eventFront.store') }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-3">
+                                <label class="form-label">Take Photo Now</label>
+                                <div class="input-group">
+                                    <input type="file" name="file" id="fileInput" class="d-none" accept="image/*"
+                                        capture="camera" required>
+                                    <input type="text" id="fileName" class="form-control" placeholder="Launch camera"
+                                        readonly style="border-right: 0px !important;" required />
+                                    <button class="input-group-text bg-secondary border-0 text-white" type="button"
+                                        id="cameraBtn">
+                                        <i class="bi bi-camera"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="form-label">Select Post Type</label>
+                                <select class="form-select form-control" name="postType" required>
+                                    <option selected disabled>select your post type</option>
+                                    <option value="image">Image</option>
+                                    <option value="video">Video</option>
+                                    <option value="text">Text</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="form-label">Choose Location</label>
+                                <div class="input-group">
+                                    <input type="text" id="locationInput" class="form-control"
+                                        placeholder="Click pin to select" readonly style="border-right: 0px !important;">
+                                    <span class="input-group-text bg-secondary border-0 text-white" id="pickLocationBtn">
+                                        <i class="bi bi-geo-alt-fill"></i>
+                                    </span>
+                                </div>
+                                <input type="hidden" name="latitude" id="latitude">
+                                <input type="hidden" name="longitude" id="longitude">
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="form-label">Title</label>
+                                <input type="text" class="form-control" name="title" placeholder="Write post title"
+                                    required />
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Write a Caption</label>
+                            <textarea class="form-control" name="caption" rows="5" placeholder="Describe what's happening.."></textarea>
+                        </div>
+
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="termsCheck" name="terms" required />
+                            <label class="form-check-label  text-14" for="termsCheck">
+                                By posting, you agree to our <a href="/term">[Terms and condition]</a> and
+                                <a href="/community">[Community Guidelines]</a>.
+                            </label>
+                        </div>
+
+                        <button class="btn-primary-hero" type="submit">Post Now</button>
                     </form>
 
 
@@ -139,6 +202,7 @@
             </div>
         </section>
     </main>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCwwtY-zzNr1TCVaaxx2kfasFL8209eIL8"></script>
     <style>
         .form-select {
             --bs-form-select-bg-img: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
@@ -255,7 +319,7 @@
             });
         </script>
 
-        <script>
+        {{-- <script>
             document.addEventListener("DOMContentLoaded", function() {
                 const pickLocationBtn = document.getElementById('pickLocationBtn');
                 const locationInput = document.getElementById('locationInput');
@@ -282,6 +346,59 @@
                         alert("Geolocation is not supported in this browser.");
                     }
                 });
+            });
+        </script> --}}
+
+        <script>
+            document.getElementById("pickLocationBtn").addEventListener("click", function() {
+
+                document.getElementById("locationInput").value = "Detecting location...";
+
+                if (navigator.geolocation) {
+
+                    navigator.geolocation.getCurrentPosition(
+                        function(position) {
+                            let lat = position.coords.latitude;
+                            let lng = position.coords.longitude;
+
+                            // Fill lat/lng in hidden inputs
+                            document.getElementById("latitude").value = lat;
+                            document.getElementById("longitude").value = lng;
+
+                            // Call Google Geocoding API for Address
+                            let geocoder = new google.maps.Geocoder();
+                            let latlng = {
+                                lat: parseFloat(lat),
+                                lng: parseFloat(lng)
+                            };
+
+                            geocoder.geocode({
+                                location: latlng
+                            }, function(results, status) {
+                                if (status === "OK") {
+                                    if (results[0]) {
+                                        document.getElementById("locationInput").value = results[0]
+                                            .formatted_address;
+                                    } else {
+                                        document.getElementById("locationInput").value = lat + ", " + lng;
+                                    }
+                                } else {
+                                    document.getElementById("locationInput").value = lat + ", " + lng;
+                                }
+                            });
+
+                            console.log("Latitude:", lat);
+                            console.log("Longitude:", lng);
+                        },
+                        function(error) {
+                            document.getElementById("locationInput").value = "Location access denied!";
+                            alert("Enable location permission to use this feature.");
+                        }
+                    );
+
+                } else {
+                    alert("Your browser does not support geolocation.");
+                }
             });
         </script>
 
