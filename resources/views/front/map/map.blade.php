@@ -188,6 +188,11 @@
                 </button> --}}
                 <div class="col-lg-8 col-md-12 p-0">
                     <div id="map" style="width:100%; height:100vh;"></div>
+                    <button onclick="startNavigation()" class="btn btn-success"
+                        style="position:absolute; top:20px; right:20px; z-index:999;">
+                        Start Navigation
+                    </button>
+
                 </div>
 
 
@@ -195,265 +200,144 @@
             </div>
         </div>
     </section>
-    {{-- <script src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_KEY') }}&libraries=places"></script> --}}
+    {{-- <script
+        src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_KEY') }}&libraries=geometry&callback=initMap"
+        async defer></script> --}}
+        {{-- <script src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_KEY') }}&libraries=geometry" async defer></script> --}}
+        <script src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_KEY') }}&libraries=geometry&callback=initMap" async defer></script>
+
     {{-- <script>
         document.addEventListener("DOMContentLoaded", function() {
 
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function(position) {
-
-                    let lat = position.coords.latitude;
-                    let lng = position.coords.longitude;
-
-                    $.ajax({
-                        url: "{{ route('map.get.distance') }}",
-                        type: "POST",
-                        data: {
-                            lat: lat,
-                            lng: lng,
-                            eventLat: "{{ $eventMap->latitude }}",
-                            eventLng: "{{ $eventMap->longitude }}",
-                            _token: "{{ csrf_token() }}"
-                        },
-                        success: function(res) {
-                            $("#distanceTime").text(res.distance + " | " + res.duration);
-                        },
-                        error: function() {
-                            $("#distanceTime").text("N/A");
-                        }
-                    });
-
-                }, function() {
-                    $("#distanceTime").text("Location blocked");
-                });
-            } else {
-                $("#distanceTime").text("No GPS available");
-            }
-        });
-    </script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-
-            if (!navigator.geolocation) {
-                $(".relatedDistanceTime").text("GPS not available");
-                $("#distanceTime").text("GPS not available");
-                return;
-            }
-
-            navigator.geolocation.getCurrentPosition(function(position) {
-
-                let userLat = position.coords.latitude;
-                let userLng = position.coords.longitude;
-
-                // ========== Main event AJAX ==========
-                $.post("{{ route('map.get.distance') }}", {
-                    _token: "{{ csrf_token() }}",
-                    lat: userLat,
-                    lng: userLng,
-                    eventLat: "{{ $eventMap->latitude }}",
-                    eventLng: "{{ $eventMap->longitude }}"
-                }, function(res) {
-                    $("#distanceTime").text(res.distance + " | " + res.duration);
-                });
-
-                // ========== Related posts AJAX ==========
-                $(".relatedDistanceTime").each(function() {
-
-                    let row = $(this);
-                    let eventLat = row.data("lat");
-                    let eventLng = row.data("lng");
-
-                    $.post("{{ route('map.get.distance') }}", {
-                        _token: "{{ csrf_token() }}",
-                        lat: userLat,
-                        lng: userLng,
-                        eventLat: eventLat,
-                        eventLng: eventLng
-                    }, function(res) {
-                        row.text(res.distance + " | " + res.duration);
-                    });
-                });
-
-            }, function() {
-                $("#distanceTime").text("Location blocked");
-                $(".relatedDistanceTime").text("Location blocked");
-            });
-
-        });
-    </script> --}}
-    {{-- <script>
-        document.addEventListener("DOMContentLoaded", function() {
-
-            let eventLat = parseFloat("{{ $eventMap->latitude }}");
-            let eventLng = parseFloat("{{ $eventMap->longitude }}");
-            let eventLocation = {
+            const eventLat = parseFloat("{{ $eventMap->latitude }}");
+            const eventLng = parseFloat("{{ $eventMap->longitude }}");
+            const eventLocation = {
                 lat: eventLat,
                 lng: eventLng
             };
 
-            // Initialize Map
             const map = new google.maps.Map(document.getElementById("map"), {
-                zoom: 14,
                 center: eventLocation,
+                zoom: 15
             });
 
-            // Marker for event
-            new google.maps.Marker({
+            // Event marker
+            const eventMarker = new google.maps.Marker({
                 position: eventLocation,
                 map: map,
                 title: "Event Location"
             });
 
-            // Google Directions Services
             const directionsService = new google.maps.DirectionsService();
             const directionsRenderer = new google.maps.DirectionsRenderer({
                 map: map,
-                suppressMarkers: false
+                suppressMarkers: true
             });
 
-            // Get User Location & Draw Route
+            // User marker
+            let userMarker = null;
+
+            // Store previous step index for voice guidance
+            let prevStepIndex = -1;
+
+            // Start watching user location
             if (navigator.geolocation) {
+                navigator.geolocation.watchPosition(
+                    function(pos) {
+                        const userLat = pos.coords.latitude;
+                        const userLng = pos.coords.longitude;
+                        const userLocation = {
+                            lat: userLat,
+                            lng: userLng
+                        };
 
-                navigator.geolocation.getCurrentPosition((pos) => {
-                    let userLat = pos.coords.latitude;
-                    let userLng = pos.coords.longitude;
-
-                    let userLocation = {
-                        lat: userLat,
-                        lng: userLng
-                    };
-
-                    // Add user marker (blue)
-                    new google.maps.Marker({
-                        position: userLocation,
-                        map: map,
-                        icon: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
-                        title: "Your Location"
-                    });
-
-                    // Request directions
-                    directionsService.route({
-                        origin: userLocation,
-                        destination: eventLocation,
-                        travelMode: google.maps.TravelMode.DRIVING
-                    }, function(result, status) {
-                        if (status === "OK") {
-                            directionsRenderer.setDirections(result);
+                        // Add or update user marker
+                        if (!userMarker) {
+                            userMarker = new google.maps.Marker({
+                                position: userLocation,
+                                map: map,
+                                icon: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+                                title: "Your Location"
+                            });
                         } else {
-                            console.log("Directions error:", status);
+                            userMarker.setPosition(userLocation);
                         }
-                    });
 
-                }, function() {
-                    console.log("User location blocked");
+                        map.panTo(userLocation);
+
+                        // Get route from user -> event
+                        directionsService.route({
+                            origin: userLocation,
+                            destination: eventLocation,
+                            travelMode: google.maps.TravelMode.DRIVING,
+                            drivingOptions: {
+                                departureTime: new Date()
+                            }
+                        }, function(result, status) {
+                            if (status === "OK") {
+                                directionsRenderer.setDirections(result);
+
+                                // Optional: step-by-step guidance
+                                const steps = result.routes[0].legs[0].steps;
+                                steps.forEach((step, index) => {
+                                    // check if user is close to this step
+                                    const stepLat = step.end_location.lat();
+                                    const stepLng = step.end_location.lng();
+                                    const distance = google.maps.geometry.spherical
+                                        .computeDistanceBetween(
+                                            new google.maps.LatLng(userLat, userLng),
+                                            new google.maps.LatLng(stepLat, stepLng)
+                                        );
+
+                                    if (distance < 30 && prevStepIndex <
+                                        index) { // within 30 meters
+                                        prevStepIndex = index;
+                                        // Voice guidance
+                                        if ('speechSynthesis' in window) {
+                                            const msg = new SpeechSynthesisUtterance(step
+                                                .instructions.replace(/<[^>]+>/g, ''));
+                                            window.speechSynthesis.speak(msg);
+                                        }
+                                    }
+                                });
+
+                                // Update distance/time UI
+                                updateDistanceUI(userLat, userLng);
+
+                            } else {
+                                console.warn("Directions error:", status);
+                            }
+                        });
+
+                    },
+                    function(err) {
+                        console.error("GPS blocked", err);
+                        $("#distanceTime").text("GPS blocked");
+                    }, {
+                        enableHighAccuracy: true,
+                        maximumAge: 0,
+                        timeout: 5000
+                    }
+                );
+            }
+
+            function updateDistanceUI(lat, lng) {
+                $.post("{{ route('map.get.distance') }}", {
+                    _token: "{{ csrf_token() }}",
+                    lat: lat,
+                    lng: lng,
+                    eventLat: eventLat,
+                    eventLng: eventLng
+                }, function(res) {
+                    $("#distanceTime").text(res.distance + " | " + res.duration);
                 });
-
-            } else {
-                console.log("Geolocation not available");
             }
 
         });
     </script> --}}
 
-    {{-- <script>
-document.addEventListener("DOMContentLoaded", function () {
-
-    let eventLat = parseFloat("{{ $eventMap->latitude }}");
-    let eventLng = parseFloat("{{ $eventMap->longitude }}");
-
-    let eventLocation = { lat: eventLat, lng: eventLng };
-
-    // Initialize Map
-    const map = new google.maps.Map(document.getElementById("map"), {
-        zoom: 15,
-        center: eventLocation
-    });
-
-    // Event marker
-    new google.maps.Marker({
-        position: eventLocation,
-        map: map,
-        title: "Event Location"
-    });
-
-    // Directions
-    const directionsService = new google.maps.DirectionsService();
-    const directionsRenderer = new google.maps.DirectionsRenderer({
-        map: map,
-        suppressMarkers: false
-    });
-
-    // USER MARKER (dynamic)
-    let userMarker = null;
-
-    // Watch user location in real time
-    if (navigator.geolocation) {
-
-        navigator.geolocation.watchPosition(
-            function (position) {
-
-                let userLat = position.coords.latitude;
-                let userLng = position.coords.longitude;
-                let userLocation = { lat: userLat, lng: userLng };
-
-                // Move or create user marker
-                if (userMarker === null) {
-                    userMarker = new google.maps.Marker({
-                        position: userLocation,
-                        map: map,
-                        icon: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
-                        title: "Your Live Location"
-                    });
-                } else {
-                    userMarker.setPosition(userLocation);
-                }
-
-                // Redraw route in real time
-                directionsService.route(
-                    {
-                        origin: userLocation,
-                        destination: eventLocation,
-                        travelMode: google.maps.TravelMode.DRIVING
-                    },
-                    function (result, status) {
-                        if (status === "OK") {
-                            directionsRenderer.setDirections(result);
-                        }
-                    }
-                );
-
-                // Update distance/time dynamically
-                updateDistanceUI(userLat, userLng);
-
-            },
-            function () {
-                console.log("User blocked GPS");
-            },
-            { enableHighAccuracy: true } // IMPORTANT for real-time accuracy
-        );
-
-    }
-
-    // Update UI distance & time
-    function updateDistanceUI(lat, lng) {
-        $.post("{{ route('map.get.distance') }}", {
-            _token: "{{ csrf_token() }}",
-            lat: lat,
-            lng: lng,
-            eventLat: "{{ $eventMap->latitude }}",
-            eventLng: "{{ $eventMap->longitude }}"
-        }, function (res) {
-            $("#distanceTime").text(res.distance + " | " + res.duration);
-        });
-    }
-
-});
-</script> --}}
-
-<script src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_KEY') }}"></script>
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-
+    <script>
+        function initMap() {
     const eventLat = parseFloat("{{ $eventMap->latitude }}");
     const eventLng = parseFloat("{{ $eventMap->longitude }}");
     const eventLocation = { lat: eventLat, lng: eventLng };
@@ -463,109 +347,51 @@ document.addEventListener("DOMContentLoaded", function () {
         zoom: 15
     });
 
-    // Event marker
-    const eventMarker = new google.maps.Marker({
-        position: eventLocation,
-        map: map,
-        title: "Event Location"
-    });
+    new google.maps.Marker({ position: eventLocation, map: map, title: "Event" });
 
     const directionsService = new google.maps.DirectionsService();
-    const directionsRenderer = new google.maps.DirectionsRenderer({
-        map: map,
-        suppressMarkers: true
-    });
+    const directionsRenderer = new google.maps.DirectionsRenderer({ map: map });
 
-    // User marker
-    let userMarker = null;
-
-    // Store previous step index for voice guidance
-    let prevStepIndex = -1;
-
-    // Start watching user location
     if (navigator.geolocation) {
-        navigator.geolocation.watchPosition(
-            function (pos) {
-                const userLat = pos.coords.latitude;
-                const userLng = pos.coords.longitude;
-                const userLocation = { lat: userLat, lng: userLng };
+        navigator.geolocation.getCurrentPosition(function(pos){
+            const userLocation = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+            new google.maps.Marker({ position: userLocation, map: map, icon: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png", title:"You" });
 
-                // Add or update user marker
-                if (!userMarker) {
-                    userMarker = new google.maps.Marker({
-                        position: userLocation,
-                        map: map,
-                        icon: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
-                        title: "Your Location"
-                    });
-                } else {
-                    userMarker.setPosition(userLocation);
-                }
-
-                map.panTo(userLocation);
-
-                // Get route from user -> event
-                directionsService.route({
-                    origin: userLocation,
-                    destination: eventLocation,
-                    travelMode: google.maps.TravelMode.DRIVING,
-                    drivingOptions: { departureTime: new Date() }
-                }, function (result, status) {
-                    if (status === "OK") {
-                        directionsRenderer.setDirections(result);
-
-                        // Optional: step-by-step guidance
-                        const steps = result.routes[0].legs[0].steps;
-                        steps.forEach((step, index) => {
-                            // check if user is close to this step
-                            const stepLat = step.end_location.lat();
-                            const stepLng = step.end_location.lng();
-                            const distance = google.maps.geometry.spherical.computeDistanceBetween(
-                                new google.maps.LatLng(userLat, userLng),
-                                new google.maps.LatLng(stepLat, stepLng)
-                            );
-
-                            if (distance < 30 && prevStepIndex < index) { // within 30 meters
-                                prevStepIndex = index;
-                                // Voice guidance
-                                if ('speechSynthesis' in window) {
-                                    const msg = new SpeechSynthesisUtterance(step.instructions.replace(/<[^>]+>/g, ''));
-                                    window.speechSynthesis.speak(msg);
-                                }
-                            }
-                        });
-
-                        // Update distance/time UI
-                        updateDistanceUI(userLat, userLng);
-
-                    } else {
-                        console.warn("Directions error:", status);
-                    }
-                });
-
-            },
-            function (err) {
-                console.error("GPS blocked", err);
-                $("#distanceTime").text("GPS blocked");
-            },
-            { enableHighAccuracy: true, maximumAge: 0, timeout: 5000 }
-        );
+            directionsService.route({
+                origin: userLocation,
+                destination: eventLocation,
+                travelMode: google.maps.TravelMode.DRIVING
+            }, function(result, status){
+                if(status==="OK") directionsRenderer.setDirections(result);
+                else alert("Directions failed: " + status);
+            });
+        }, function(err){ alert("GPS error: "+err.message); });
     }
+}
 
-    function updateDistanceUI(lat, lng) {
-        $.post("{{ route('map.get.distance') }}", {
-            _token: "{{ csrf_token() }}",
-            lat: lat,
-            lng: lng,
-            eventLat: eventLat,
-            eventLng: eventLng
-        }, function (res) {
-            $("#distanceTime").text(res.distance + " | " + res.duration);
+    </script>
+    <script>
+        function startNavigation() {
+    const eventLat = "{{ $eventMap->latitude }}";
+    const eventLng = "{{ $eventMap->longitude }}";
+
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+
+            let originLat = position.coords.latitude;
+            let originLng = position.coords.longitude;
+
+            // Google Maps turn-by-turn navigation URL
+            let navigationUrl =
+                `https://www.google.com/maps/dir/?api=1&origin=${originLat},${originLng}&destination=${eventLat},${eventLng}&travelmode=driving`;
+
+            // Open Google Maps App / Website
+            window.open(navigationUrl, "_blank");
         });
+    } else {
+        alert("GPS not supported");
     }
+}
 
-});
-</script>
-
-
+    </script>
 @endsection
