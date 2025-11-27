@@ -596,82 +596,266 @@ public function getDistanceAjax(Request $request)
     // }
 
 
+    // public function map(Request $request)
+    // {
+    //     $userLat = $request->lat;
+    //     $userLng = $request->lng;
+    //     $locale  = session('locale', config('app.locale'));
+
+    //     // Distance filter (meters)
+    //     $distance = $request->get('distance');
+    //     // Post type filter
+    //     $type = $request->get('type');
+    //     // Sort filter
+    //     $sort = $request->get('sort', 'latest'); // default latest
+
+    //     // Latest Event
+    //     $latestEvent = Event::with('media')
+    //         ->when($type, fn($q) => $q->where('label', $type))
+    //         ->orderBy($sort === 'oldest' ? 'created_at' : 'created_at', $sort === 'oldest' ? 'asc' : 'desc')
+    //         ->first();
+
+    //     if ($latestEvent) {
+    //         if ($locale != 'en') {
+    //             $tr = new GoogleTranslate($locale);
+    //             $latestEvent->title       = $tr->translate($latestEvent->title);
+    //             $latestEvent->description = $tr->translate($latestEvent->description);
+    //         }
+
+    //         if ($userLat && $userLng) {
+    //             $latestDistance = Event::calculateDistance(
+    //                 $userLat,
+    //                 $userLng,
+    //                 $latestEvent->latitude,
+    //                 $latestEvent->longitude
+    //             );
+
+    //             if (!$distance || $latestDistance <= $distance) {
+    //                 $latestEvent->distance_text = $latestDistance >= 1000
+    //                     ? round($latestDistance / 1000, 1) . ' km'
+    //                     : $latestDistance . ' m';
+    //             } else {
+    //                 $latestEvent = null; // exclude if outside filter
+    //             }
+    //         }
+    //     }
+
+    //     // Other Events
+    //     $otherEvents = Event::with('media')
+    //         ->when($type, fn($q) => $q->where('label', $type))
+    //         ->where('id', '!=', optional($latestEvent)->id)
+    //         ->orderBy($sort === 'oldest' ? 'created_at' : 'created_at', $sort === 'oldest' ? 'asc' : 'desc')
+    //         ->take(10)
+    //         ->get();
+
+    //     if ($userLat && $userLng) {
+    //         $otherEvents = $otherEvents->filter(function ($event) use ($userLat, $userLng, $locale, $distance) {
+    //             if ($locale != 'en') {
+    //                 $tr = new GoogleTranslate(app()->getLocale());
+    //                 $event->title       = $tr->translate($event->title);
+    //                 $event->description = $tr->translate($event->description);
+    //             }
+
+    //             $d = Event::calculateDistance($userLat, $userLng, $event->latitude, $event->longitude);
+    //             $event->distance_text = $d >= 1000 ? round($d / 1000, 1) . ' km' : $d . ' m';
+
+    //             // Filter by distance if given
+    //             return !$distance || $d <= $distance;
+    //         });
+    //     }
+
+    //     return view('front.map.map-view', [
+    //         'latestEvent' => $latestEvent,
+    //         'otherEvents' => $otherEvents,
+    //         'userLat'     => $userLat,
+    //         'userLng'     => $userLng,
+    //         'filters'     => compact('distance', 'type', 'sort')
+    //     ]);
+    // }
+
+
     public function map(Request $request)
-    {
-        $userLat = $request->lat;
-        $userLng = $request->lng;
-        $locale  = session('locale', config('app.locale'));
+{
+    $locale  = session('locale', config('app.locale'));
 
-        // Distance filter (meters)
-        $distance = $request->get('distance');
-        // Post type filter
-        $type = $request->get('type');
-        // Sort filter
-        $sort = $request->get('sort', 'latest'); // default latest
+    // Post type filter
+    $type = $request->get('type');
+    // Sort filter
+    $sort = $request->get('sort', 'latest'); // default latest
 
-        // Latest Event
-        $latestEvent = Event::with('media')
-            ->when($type, fn($q) => $q->where('label', $type))
-            ->orderBy($sort === 'oldest' ? 'created_at' : 'created_at', $sort === 'oldest' ? 'asc' : 'desc')
-            ->first();
+    // Latest Event
+    $latestEvent = Event::with('media')
+        ->when($type, fn($q) => $q->where('label', $type))
+        ->orderBy($sort === 'oldest' ? 'created_at' : 'created_at', $sort === 'oldest' ? 'asc' : 'desc')
+        ->first();
 
-        if ($latestEvent) {
-            if ($locale != 'en') {
-                $tr = new GoogleTranslate($locale);
-                $latestEvent->title       = $tr->translate($latestEvent->title);
-                $latestEvent->description = $tr->translate($latestEvent->description);
-            }
-
-            if ($userLat && $userLng) {
-                $latestDistance = Event::calculateDistance(
-                    $userLat,
-                    $userLng,
-                    $latestEvent->latitude,
-                    $latestEvent->longitude
-                );
-
-                if (!$distance || $latestDistance <= $distance) {
-                    $latestEvent->distance_text = $latestDistance >= 1000
-                        ? round($latestDistance / 1000, 1) . ' km'
-                        : $latestDistance . ' m';
-                } else {
-                    $latestEvent = null; // exclude if outside filter
-                }
-            }
-        }
-
-        // Other Events
-        $otherEvents = Event::with('media')
-            ->when($type, fn($q) => $q->where('label', $type))
-            ->where('id', '!=', optional($latestEvent)->id)
-            ->orderBy($sort === 'oldest' ? 'created_at' : 'created_at', $sort === 'oldest' ? 'asc' : 'desc')
-            ->take(10)
-            ->get();
-
-        if ($userLat && $userLng) {
-            $otherEvents = $otherEvents->filter(function ($event) use ($userLat, $userLng, $locale, $distance) {
-                if ($locale != 'en') {
-                    $tr = new GoogleTranslate(app()->getLocale());
-                    $event->title       = $tr->translate($event->title);
-                    $event->description = $tr->translate($event->description);
-                }
-
-                $d = Event::calculateDistance($userLat, $userLng, $event->latitude, $event->longitude);
-                $event->distance_text = $d >= 1000 ? round($d / 1000, 1) . ' km' : $d . ' m';
-
-                // Filter by distance if given
-                return !$distance || $d <= $distance;
-            });
-        }
-
-        return view('front.map.map-view', [
-            'latestEvent' => $latestEvent,
-            'otherEvents' => $otherEvents,
-            'userLat'     => $userLat,
-            'userLng'     => $userLng,
-            'filters'     => compact('distance', 'type', 'sort')
-        ]);
+    if ($latestEvent && $locale != 'en') {
+        $tr = new GoogleTranslate($locale);
+        $latestEvent->title       = $tr->translate($latestEvent->title);
+        $latestEvent->description = $tr->translate($latestEvent->description);
     }
+
+    // Other Events
+    $otherEvents = Event::with('media')
+        ->when($type, fn($q) => $q->where('label', $type))
+        ->where('id', '!=', optional($latestEvent)->id)
+        ->orderBy($sort === 'oldest' ? 'created_at' : 'created_at', $sort === 'oldest' ? 'asc' : 'desc')
+        ->take(10)
+        ->get();
+
+    if ($locale != 'en') {
+        $tr = new GoogleTranslate($locale);
+        foreach ($otherEvents as $event) {
+            $event->title = $tr->translate($event->title);
+            $event->description = $tr->translate($event->description);
+        }
+    }
+
+    return view('front.map.map-view', [
+        'latestEvent' => $latestEvent,
+        'otherEvents' => $otherEvents,
+        'filters'     => compact('type', 'sort')
+    ]);
+}
+
+public function ajaxDistance(Request $request)
+{
+    $userLat = $request->lat;
+    $userLng = $request->lng;
+
+    if (!$userLat || !$userLng) {
+        return response()->json(['error' => true]);
+    }
+
+    // Get events
+    $latestEvent = Event::orderBy('created_at', 'desc')->first();
+    $otherEvents = Event::where('id', '!=', optional($latestEvent)->id)->take(10)->get();
+
+    $apiKey = env('GOOGLE_MAPS_KEY');
+
+    // Build destinations (lat,lng)
+    $destinations = [];
+
+    if ($latestEvent) {
+        $destinations[] = "{$latestEvent->latitude},{$latestEvent->longitude}";
+    }
+
+    foreach ($otherEvents as $e) {
+        $destinations[] = "{$e->latitude},{$e->longitude}";
+    }
+
+    // Build Google API URL
+    $distanceUrl =
+        "https://maps.googleapis.com/maps/api/distancematrix/json?" .
+        "origins={$userLat},{$userLng}" .
+        "&destinations=" . implode("|", $destinations) .
+        "&mode=driving" .
+        "&key={$apiKey}";
+
+    // Call API
+    $response = file_get_contents($distanceUrl);
+    $data = json_decode($response, true);
+
+    $rows = $data["rows"][0]["elements"];
+    $i = 0;
+
+    // latest event response
+    $latest = null;
+    if ($latestEvent) {
+        $latest = [
+            "id" => $latestEvent->id,
+            "distance" => $rows[$i]["distance"]["text"],
+            "duration" => $rows[$i]["duration"]["text"],
+        ];
+        $i++;
+    }
+
+    // other events response
+    $others = [];
+    foreach ($otherEvents as $ev) {
+        $others[] = [
+            "id" => $ev->id,
+            "distance" => $rows[$i]["distance"]["text"],
+            "duration" => $rows[$i]["duration"]["text"]
+        ];
+        $i++;
+    }
+
+    return response()->json([
+        "latest" => $latest,
+        "others" => $others
+    ]);
+}
+
+public function ajaxFilterEvents(Request $request)
+{
+    $userLat = $request->lat;
+    $userLng = $request->lng;
+    $distance = $request->distance; // in km
+    $type = $request->type;
+    $sort = $request->sort ?? 'latest';
+
+    if(!$userLat || !$userLng){
+        return response()->json(['error'=>true,'message'=>'Location missing']);
+    }
+
+    // Query latest event
+    $latestEvent = Event::when($type, fn($q) => $q->where('label', $type))
+        ->orderBy('created_at', $sort === 'oldest' ? 'asc' : 'desc')
+        ->first();
+
+    // Query other events
+    $otherEvents = Event::when($type, fn($q) => $q->where('label', $type))
+        ->where('id', '!=', optional($latestEvent)->id)
+        ->take(50)
+        ->get();
+
+    $allEvents = collect();
+    if($latestEvent) $allEvents->push($latestEvent);
+    $allEvents = $allEvents->merge($otherEvents);
+
+    $results = ['latest'=>null,'others'=>[]];
+    $destinations = $allEvents->map(fn($e)=>"{$e->latitude},{$e->longitude}")->toArray();
+
+    if(!empty($destinations)){
+        $apiKey = env('GOOGLE_MAPS_KEY');
+        $distanceUrl = "https://maps.googleapis.com/maps/api/distancematrix/json?origins={$userLat},{$userLng}&destinations=".implode('|',$destinations)."&mode=driving&key={$apiKey}";
+
+        $response = @file_get_contents($distanceUrl);
+        if($response){
+            $data = json_decode($response,true);
+            if(isset($data['rows'][0]['elements'])){
+                $rows = $data['rows'][0]['elements'];
+                foreach($allEvents as $i => $ev){
+                    $d = $rows[$i]['distance']['text'] ?? '--';
+                    $t = $rows[$i]['duration']['text'] ?? '--';
+
+                    $item = [
+                        'id'=>$ev->id,
+                        'title'=>$ev->title,
+                        'description'=>$ev->description,
+                        'media_path'=>$ev->media_path,
+                        'latitude'=>$ev->latitude,
+                        'longitude'=>$ev->longitude,
+                        'distance'=>$d,
+                        'duration'=>$t
+                    ];
+
+                    if($i===0 && $latestEvent){
+                        $results['latest'] = $item;
+                    } else {
+                        $results['others'][] = $item;
+                    }
+                }
+            }
+        }
+    }
+
+    return response()->json($results);
+}
+
+
+
 
 
 

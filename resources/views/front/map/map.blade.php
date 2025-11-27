@@ -203,8 +203,10 @@
     {{-- <script
         src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_KEY') }}&libraries=geometry&callback=initMap"
         async defer></script> --}}
-        {{-- <script src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_KEY') }}&libraries=geometry" async defer></script> --}}
-        <script src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_KEY') }}&libraries=geometry&callback=initMap" async defer></script>
+    {{-- <script src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_KEY') }}&libraries=geometry" async defer></script> --}}
+    <script
+        src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_KEY') }}&libraries=geometry&callback=initMap"
+        async defer></script>
 
     {{-- <script>
         document.addEventListener("DOMContentLoaded", function() {
@@ -337,61 +339,259 @@
     </script> --}}
 
     <script>
+        // function initMap() {
+        //     const eventLat = parseFloat("{{ $eventMap->latitude }}");
+        //     const eventLng = parseFloat("{{ $eventMap->longitude }}");
+        //     const eventLocation = {
+        //         lat: eventLat,
+        //         lng: eventLng
+        //     };
+
+        //     const map = new google.maps.Map(document.getElementById("map"), {
+        //         center: eventLocation,
+        //         zoom: 15
+        //     });
+
+        //     new google.maps.Marker({
+        //         position: eventLocation,
+        //         map: map,
+        //         title: "Event"
+        //     });
+
+        //     const directionsService = new google.maps.DirectionsService();
+        //     const directionsRenderer = new google.maps.DirectionsRenderer({
+        //         map: map
+        //     });
+
+        //     if (navigator.geolocation) {
+        //         navigator.geolocation.getCurrentPosition(function(pos) {
+        //             const userLocation = {
+        //                 lat: pos.coords.latitude,
+        //                 lng: pos.coords.longitude
+        //             };
+        //             new google.maps.Marker({
+        //                 position: userLocation,
+        //                 map: map,
+        //                 icon: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+        //                 title: "You"
+        //             });
+
+        //             directionsService.route({
+        //                 origin: userLocation,
+        //                 destination: eventLocation,
+        //                 travelMode: google.maps.TravelMode.DRIVING
+        //             }, function(result, status) {
+        //                 if (status === "OK") directionsRenderer.setDirections(result);
+        //                 else alert("Directions failed: " + status);
+        //             });
+        //         }, function(err) {
+        //             alert("GPS error: " + err.message);
+        //         });
+        //     }
+        // }
+
+        // function initMap() {
+        //     const eventLat = parseFloat("{{ $eventMap->latitude }}");
+        //     const eventLng = parseFloat("{{ $eventMap->longitude }}");
+        //     const eventLocation = {
+        //         lat: eventLat,
+        //         lng: eventLng
+        //     };
+
+        //     const map = new google.maps.Map(document.getElementById("map"), {
+        //         center: eventLocation,
+        //         zoom: 15
+        //     });
+
+        //     // Main Event Marker
+        //     new google.maps.Marker({
+        //         position: eventLocation,
+        //         map: map,
+        //         title: "Event",
+        //         icon: "https://maps.google.com/mapfiles/ms/icons/red-dot.png" // Main event in red
+        //     });
+
+        //     // Related Posts Markers
+        //     @foreach ($relatedPosts as $related)
+        //         @if ($related->latitude && $related->longitude)
+        //             new google.maps.Marker({
+        //                 position: {
+        //                     lat: parseFloat("{{ $related->latitude }}"),
+        //                     lng: parseFloat("{{ $related->longitude }}")
+        //                 },
+        //                 map: map,
+        //                 title: "{{ $related->title }}",
+        //                 icon: "https://maps.google.com/mapfiles/ms/icons/green-dot.png" // Related posts in green
+        //             });
+        //         @endif
+        //     @endforeach
+
+        //     // Directions
+        //     const directionsService = new google.maps.DirectionsService();
+        //     const directionsRenderer = new google.maps.DirectionsRenderer({
+        //         map: map
+        //     });
+
+        //     if (navigator.geolocation) {
+        //         navigator.geolocation.getCurrentPosition(function(pos) {
+        //             const userLocation = {
+        //                 lat: pos.coords.latitude,
+        //                 lng: pos.coords.longitude
+        //             };
+        //             new google.maps.Marker({
+        //                 position: userLocation,
+        //                 map: map,
+        //                 icon: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+        //                 title: "You"
+        //             });
+
+        //             // Route from user to main event
+        //             directionsService.route({
+        //                 origin: userLocation,
+        //                 destination: eventLocation,
+        //                 travelMode: google.maps.TravelMode.DRIVING
+        //             }, function(result, status) {
+        //                 if (status === "OK") directionsRenderer.setDirections(result);
+        //                 else alert("Directions failed: " + status);
+        //             });
+        //         }, function(err) {
+        //             alert("GPS error: " + err.message);
+        //         });
+        //     }
+        // }
+
         function initMap() {
-    const eventLat = parseFloat("{{ $eventMap->latitude }}");
-    const eventLng = parseFloat("{{ $eventMap->longitude }}");
-    const eventLocation = { lat: eventLat, lng: eventLng };
+            const eventLat = parseFloat("{{ $eventMap->latitude }}");
+            const eventLng = parseFloat("{{ $eventMap->longitude }}");
+            const eventLocation = {
+                lat: eventLat,
+                lng: eventLng
+            };
 
-    const map = new google.maps.Map(document.getElementById("map"), {
-        center: eventLocation,
-        zoom: 15
-    });
-
-    new google.maps.Marker({ position: eventLocation, map: map, title: "Event" });
-
-    const directionsService = new google.maps.DirectionsService();
-    const directionsRenderer = new google.maps.DirectionsRenderer({ map: map });
-
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function(pos){
-            const userLocation = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-            new google.maps.Marker({ position: userLocation, map: map, icon: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png", title:"You" });
-
-            directionsService.route({
-                origin: userLocation,
-                destination: eventLocation,
-                travelMode: google.maps.TravelMode.DRIVING
-            }, function(result, status){
-                if(status==="OK") directionsRenderer.setDirections(result);
-                else alert("Directions failed: " + status);
+            const map = new google.maps.Map(document.getElementById("map"), {
+                center: eventLocation,
+                zoom: 15
             });
-        }, function(err){ alert("GPS error: "+err.message); });
-    }
-}
 
+            // Main Event Marker
+            new google.maps.Marker({
+                position: eventLocation,
+                map: map,
+                title: "Event",
+                icon: "https://maps.google.com/mapfiles/ms/icons/red-dot.png"
+            });
+
+            // Related Posts Markers
+            @foreach ($relatedPosts as $related)
+                @if ($related->latitude && $related->longitude)
+                    new google.maps.Marker({
+                        position: {
+                            lat: parseFloat("{{ $related->latitude }}"),
+                            lng: parseFloat("{{ $related->longitude }}")
+                        },
+                        map: map,
+                        title: "{{ $related->title }}",
+                        icon: "https://maps.google.com/mapfiles/ms/icons/green-dot.png"
+                    });
+                @endif
+            @endforeach
+
+            // Directions & Distance Calculation
+            const directionsService = new google.maps.DirectionsService();
+            const directionsRenderer = new google.maps.DirectionsRenderer({
+                map: map
+            });
+            const distanceService = new google.maps.DistanceMatrixService();
+
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(pos) {
+                    const userLocation = {
+                        lat: pos.coords.latitude,
+                        lng: pos.coords.longitude
+                    };
+
+                    // User Marker
+                    new google.maps.Marker({
+                        position: userLocation,
+                        map: map,
+                        icon: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+                        title: "You"
+                    });
+
+                    // Route to Main Event
+                    directionsService.route({
+                        origin: userLocation,
+                        destination: eventLocation,
+                        travelMode: google.maps.TravelMode.DRIVING
+                    }, function(result, status) {
+                        if (status === "OK") directionsRenderer.setDirections(result);
+                    });
+
+                    // Distance & Time for Main Event
+                    distanceService.getDistanceMatrix({
+                        origins: [userLocation],
+                        destinations: [eventLocation],
+                        travelMode: google.maps.TravelMode.DRIVING
+                    }, function(response, status) {
+                        if (status === "OK") {
+                            const element = response.rows[0].elements[0];
+                            document.getElementById("distanceTime").innerText = element.distance.text +
+                                " | " + element.duration.text;
+                        }
+                    });
+
+                    // Distance & Time for Related Posts
+                    @foreach ($relatedPosts as $related)
+                        @if ($related->latitude && $related->longitude)
+                            distanceService.getDistanceMatrix({
+                                origins: [userLocation],
+                                destinations: [{
+                                    lat: parseFloat("{{ $related->latitude }}"),
+                                    lng: parseFloat("{{ $related->longitude }}")
+                                }],
+                                travelMode: google.maps.TravelMode.DRIVING
+                            }, function(response, status) {
+                                if (status === "OK") {
+                                    const element = response.rows[0].elements[0];
+                                    const relatedElem = document.querySelector(
+                                        '.relatedDistanceTime[data-lat="{{ $related->latitude }}"][data-lng="{{ $related->longitude }}"]'
+                                        );
+                                    if (relatedElem) {
+                                        relatedElem.innerText = element.distance.text + " | " + element
+                                            .duration.text;
+                                    }
+                                }
+                            });
+                        @endif
+                    @endforeach
+
+                }, function(err) {
+                    alert("GPS error: " + err.message);
+                });
+            }
+        }
     </script>
     <script>
         function startNavigation() {
-    const eventLat = "{{ $eventMap->latitude }}";
-    const eventLng = "{{ $eventMap->longitude }}";
+            const eventLat = "{{ $eventMap->latitude }}";
+            const eventLng = "{{ $eventMap->longitude }}";
 
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function(position) {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
 
-            let originLat = position.coords.latitude;
-            let originLng = position.coords.longitude;
+                    let originLat = position.coords.latitude;
+                    let originLng = position.coords.longitude;
 
-            // Google Maps turn-by-turn navigation URL
-            let navigationUrl =
-                `https://www.google.com/maps/dir/?api=1&origin=${originLat},${originLng}&destination=${eventLat},${eventLng}&travelmode=driving`;
+                    // Google Maps turn-by-turn navigation URL
+                    let navigationUrl =
+                        `https://www.google.com/maps/dir/?api=1&origin=${originLat},${originLng}&destination=${eventLat},${eventLng}&travelmode=driving`;
 
-            // Open Google Maps App / Website
-            window.open(navigationUrl, "_blank");
-        });
-    } else {
-        alert("GPS not supported");
-    }
-}
-
+                    // Open Google Maps App / Website
+                    window.open(navigationUrl, "_blank");
+                });
+            } else {
+                alert("GPS not supported");
+            }
+        }
     </script>
 @endsection

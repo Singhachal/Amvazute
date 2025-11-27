@@ -81,18 +81,12 @@
 
                                 <!-- Event Type -->
                                 <!-- Event Type -->
-                                <select name="label">
+                                {{-- <select name="label">
                                     <option value="">All Types</option>
-                                    {{-- @foreach ($labels as $label)
-                                        <option value="{{ $label }}"
-                                            {{ request('label') == $label ? 'selected' : '' }}>
-                                            {{ ucfirst($label) }}
-                                        </option>
-                                    @endforeach --}}
                                     @php
                                         // Add default label if it's not already in the list
-if (!$labels->contains('General')) {
-    $labels->push('General');
+                                        if (!$labels->contains('General')) {
+                                            $labels->push('General');
                                         }
                                     @endphp
 
@@ -103,7 +97,28 @@ if (!$labels->contains('General')) {
                                         </option>
                                     @endforeach
 
+                                </select> --}}
+
+                                <select name="label" class="form-select filter-button">
+                                    <option value="">All Types</option>
+
+                                    @php
+                                        // Fetch distinct labels from events
+                                        $labels = \App\Models\Event::pluck('label')
+                                            ->map(function ($label) {
+                                                return $label ?: 'General'; // Replace blank/null with 'General'
+                                            })
+                                            ->unique();
+                                    @endphp
+
+                                    @foreach ($labels as $label)
+                                        <option value="{{ $label }}"
+                                            {{ request('label') == $label ? 'selected' : '' }}>
+                                            {{ ucfirst($label) }} 
+                                        </option>
+                                    @endforeach
                                 </select>
+
 
 
                                 <!-- Location Radius -->
@@ -239,41 +254,44 @@ if (!$labels->contains('General')) {
         </div>
     </section>
     <script>
-document.addEventListener('DOMContentLoaded', function () {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function(position) {
-            let lat = position.coords.latitude;
-            let lng = position.coords.longitude;
-            console.log('User location:', position.coords.latitude, position.coords.longitude);
+        document.addEventListener('DOMContentLoaded', function() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    let lat = position.coords.latitude;
+                    let lng = position.coords.longitude;
+                    console.log('User location:', position.coords.latitude, position.coords.longitude);
 
-            document.querySelectorAll('.distance').forEach(function(span) {
-                let eventId = span.dataset.eventId;
+                    document.querySelectorAll('.distance').forEach(function(span) {
+                        let eventId = span.dataset.eventId;
 
-                fetch("{{ route('event.distance') }}", {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': "{{ csrf_token() }}"
-                    },
-                    body: JSON.stringify({ latitude: lat, longitude: lng, event_id: eventId })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if(data.success){
-                        span.textContent = data.distance + ' | ' + data.duration;
-                    } else {
-                        span.textContent = 'N/A';
-                    }
+                        fetch("{{ route('event.distance') }}", {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                                },
+                                body: JSON.stringify({
+                                    latitude: lat,
+                                    longitude: lng,
+                                    event_id: eventId
+                                })
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    span.textContent = data.distance + ' | ' + data.duration;
+                                } else {
+                                    span.textContent = 'N/A';
+                                }
+                            });
+                    });
+
+                }, function(error) {
+                    console.error('Geolocation error:', error);
                 });
-            });
-
-        }, function(error) {
-            console.error('Geolocation error:', error);
+            } else {
+                console.error('Geolocation not supported by browser');
+            }
         });
-    } else {
-        console.error('Geolocation not supported by browser');
-    }
-});
-</script>
-
+    </script>
 @endsection
