@@ -1,6 +1,5 @@
 @extends('front.layouts.main')
 @section('content')
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         body {
             background-color: #000;
@@ -93,19 +92,52 @@
         input::placeholder {
             color: #fff !important;
         }
+
         .form-select {
             font-size: 14px !important;
         }
-        @media (max-width:576px)
-        {
+
+        @media (max-width:576px) {
             .form-select {
-            font-size: 12px !important;
-        }
+                font-size: 12px !important;
+            }
         }
 
-        .leaflet-routing-container {
-            display: none;
+        /* .leaflet-routing-container {
+                display: none;
+            } */
+
+        .filter-bar .filter-button {
+            background-color: #1a1a1a;
+            /* default dark */
+            color: #fff;
+            border: none;
         }
+
+        .filter-bar .filter-button:hover {
+            background-color: #000;
+            /* black on hover */
+            color: #fff;
+        }
+
+        /* Sidebar scroll */
+.sidebar {
+    background-color: #000;
+    overflow-y: auto;      /* enable vertical scrolling */
+    height: calc(100vh - 40px); /* full viewport height minus some padding/margin */
+    padding: 1rem;
+}
+
+/* Optional: smooth scroll */
+.sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background-color: #555;
+    border-radius: 3px;
+}
+
     </style>
     <section class="">
         <div class="container-fluid">
@@ -127,37 +159,27 @@
                         <button class="filter-button">Sort By <i class="arrow-down"></i></button>
                     </div> --}}
 
-                    <div class="filter-bar mb-2">
-    <form method="GET" action="{{ url()->current() }}">
-        <input type="hidden" name="lat" value="{{ $userLat }}">
-        <input type="hidden" name="lng" value="{{ $userLng }}">
+                    <div class="filter-bar mb-3">
+                        <select id="filter-distance" class="form-select filter-button">
+                            <option value="">View posts within</option>
+                            <option value="1">1 km</option>
+                            <option value="5">5 km</option>
+                            <option value="10">10 km</option>
+                            <option value="20">20 km</option>
+                        </select>
 
-        <!-- Distance Filter -->
-        <select name="distance" class="form-select d-inline-block w-auto  mb-2">
-            <option value="">View posts within</option>
-            <option value="500" {{ request('distance') == 500 ? 'selected' : '' }}>500 m</option>
-            <option value="1000" {{ request('distance') == 1000 ? 'selected' : '' }}>1 km</option>
-            <option value="5000" {{ request('distance') == 5000 ? 'selected' : '' }}>5 km</option>
-            <option value="10000" {{ request('distance') == 10000 ? 'selected' : '' }}>10 km</option>
-        </select>
+                        <select id="filter-type" class="form-select filter-button">
+                            <option value="">Post Type</option>
+                            @foreach (\App\Models\Event::distinct('label')->pluck('label') as $label)
+                                <option value="{{ $label }}">{{ ucfirst($label) }}</option>
+                            @endforeach
+                        </select>
 
-        <!-- Post Type Filter -->
-        <select name="type" class="form-select d-inline-block w-auto mb-2">
-            <option value="">Post Type</option>
-            <option value="alert" {{ request('type') == 'alert' ? 'selected' : '' }}>Alert</option>
-            <option value="place" {{ request('type') == 'place' ? 'selected' : '' }}>Place</option>
-            <option value="post" {{ request('type') == 'post' ? 'selected' : '' }}>Post</option>
-        </select>
-
-        <!-- Sort Filter -->
-        <select name="sort" class="form-select d-inline-block w-auto mb-2">
-            <option value="latest" {{ request('sort') == 'latest' ? 'selected' : '' }}>Latest</option>
-            <option value="oldest" {{ request('sort') == 'oldest' ? 'selected' : '' }}>Oldest</option>
-        </select>
-
-        <button type="submit" class="btn btn-sm btn-danger py-1">Apply</button>
-    </form>
-</div>
+                        <select id="filter-sort" class="form-select filter-button">
+                            <option value="latest">Sort By: Latest</option>
+                            <option value="oldest">Sort By: Oldest</option>
+                        </select>
+                    </div>
 
 
                     {{-- <img src="/front/asset/img/home/Frame1.png" class="me-3" alt="" style="height:300px; width:100%;">
@@ -176,9 +198,10 @@
                         <div class="post-card d-flex mt-2">
                             <div>
                                 <small class="text-muted">
-                                    {{ $latestEvent->distance_text ?? '' }} |
-                                    {{ $latestEvent->reported_at?->diffForHumans() ?? $latestEvent->created_at->diffForHumans() }}
+                                    <span id="latest-distance">--</span> |
+                                    <span id="latest-time">--</span>
                                 </small>
+
                                 <h6 class="text-white mt-1">{{ $latestEvent->title }}</h6>
                                 <p class="small">{{ $latestEvent->description }}</p>
                             </div>
@@ -191,9 +214,10 @@
 
                             <div>
                                 <small class="text-muted">
-                                    {{ $event->distance_text ?? '' }} |
-                                    {{ $event->reported_at?->diffForHumans() ?? $event->created_at->diffForHumans() }}
+                                    <span id="distance-{{ $event->id }}">--</span> |
+                                    <span id="time-{{ $event->id }}">--</span>
                                 </small>
+
 
                                 <h6 class="text-white mt-1">{{ $event->title }}</h6>
                                 <p class="small">
@@ -207,270 +231,216 @@
                 </div>
 
                 <!-- Map -->
-                {{-- <div class="col-lg-8 col-md-12 map-container">
-                    <iframe src="https://www.google.com/maps/embed?pb=!1m18..." allowfullscreen></iframe>
+                <div class="col-lg-8 col-md-12 map-container">
+                    {{-- <iframe src="https://www.google.com/maps/embed?pb=!1m18..." allowfullscreen></iframe>
 
                     <!-- Example markers -->
                     <div class="map-marker marker-1">Tried a shawarma from this tiny cart on Strada Franceza surprisingly
                         great!</div>
                     <div class="map-marker marker-2">Traffic light not working near Piata Romana. Drive with caution!</div>
-                    <div class="map-marker marker-3">Blocked sidewalk on Str. Polona. Be careful walking around here.</div>
-                </div> --}}
-                <div class="col-lg-8 col-md-12 map-container" id="map-container">
-                    <div id="map" style="width: 100%; height: 100vh;"></div>
+                    <div class="map-marker marker-3">Blocked sidewalk on Str. Polona. Be careful walking around here.</div> --}}
 
-                    {{-- Hidden marker divs for all events --}}
-                    @if ($latestEvent)
-                        <div class="map-marker" data-lat="{{ $latestEvent->latitude }}"
-                            data-lng="{{ $latestEvent->longitude }}" data-type="latest">
-                            <b>{{ $latestEvent->title }}</b><br>{{ $latestEvent->distance_text ?? '' }} away
-                        </div>
-                    @endif
-
-                    @foreach ($otherEvents as $event)
-                        <div class="map-marker" data-lat="{{ $event->latitude }}" data-lng="{{ $event->longitude }}"
-                            data-type="other">
-                            <b>{{ $event->title }}</b><br>{{ $event->distance_text ?? '' }} away
-                        </div>
-                    @endforeach
+                    <div id="eventMap" style="height:700px; width:100%;" allowfullscreen></div>
 
                 </div>
-
             </div>
         </div>
     </section>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function(position) {
-                let lat = position.coords.latitude;
-                let lng = position.coords.longitude;
 
-                // Send location via POST (no URL exposure)
-                $.ajax({
-                    url: "{{ route('map') }}",
-                    type: "POST",
-                    data: {
-                        latitude: lat,
-                        longitude: lng,
-                        _token: "{{ csrf_token() }}"
-                    },
-                    success: function(response) {
-                        $("#events-container").html(response);
-                    }
-                });
-            }, function() {
-                $("#events-container").html("<p>Location access denied.</p>");
-            });
-        } else {
-            $("#events-container").html("<p>Geolocation not supported.</p>");
-        }
-    </script>
 
-    <script>
-        // Get user's location and reload page with query params
-        window.onload = function() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function(position) {
-                    const latitude = position.coords.latitude;
-                    const longitude = position.coords.longitude;
 
-                    const urlParams = new URLSearchParams(window.location.search);
-                    if (!urlParams.get('lat') || !urlParams.get('lng')) {
-                        window.location.href = `/map-view?lat=${latitude}&lng=${longitude}`;
-                    }
-                });
-            }
-        };
-    </script>
-
-    {{-- <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_KEY') }}"></script>
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            // Map center: latest event first, else default
-            const mapCenter = [
-                {{ $latestEvent->latitude ?? 28.6139 }},
-                {{ $latestEvent->longitude ?? 77.209 }}
-            ];
 
-            // Initialize map
-            const map = L.map('map').setView(mapCenter, 13);
+            const map = new google.maps.Map(document.getElementById("eventMap"), {
+                center: {
+                    lat: 28.6139,
+                    lng: 77.2090
+                },
+                zoom: 12
+            });
 
-            // OpenStreetMap tiles
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; OpenStreetMap contributors'
-            }).addTo(map);
+            function addDotMarker(lat, lng, title) {
+                new google.maps.Marker({
+                    position: {
+                        lat: parseFloat(lat),
+                        lng: parseFloat(lng)
+                    },
+                    map: map,
+                    title: title,
+                    icon: {
+                        path: google.maps.SymbolPath.CIRCLE,
+                        scale: 6,
+                        fillColor: "#ff3333",
+                        fillOpacity: 1,
+                        strokeWeight: 2,
+                        strokeColor: "#ffffff"
+                    }
+                });
+            }
 
-            // User location marker (optional)
-            @if ($userLat && $userLng)
-                L.marker([{{ $userLat }}, {{ $userLng }}], {
-                    title: 'You are here',
-                    icon: L.icon({
-                        iconUrl: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png',
-                        iconSize: [32, 32],
-                        iconAnchor: [16, 32]
-                    })
-                }).addTo(map).bindPopup("<b>You are here</b>");
+            @if ($latestEvent)
+                addDotMarker("{{ $latestEvent->latitude }}", "{{ $latestEvent->longitude }}",
+                    "{{ $latestEvent->title }}");
+                map.setCenter({
+                    lat: parseFloat("{{ $latestEvent->latitude }}"),
+                    lng: parseFloat("{{ $latestEvent->longitude }}")
+                });
             @endif
 
-            // Loop through all event marker divs
-            document.querySelectorAll('.map-marker').forEach(function(markerDiv) {
-                const lat = parseFloat(markerDiv.getAttribute('data-lat'));
-                const lng = parseFloat(markerDiv.getAttribute('data-lng'));
-                const popupText = markerDiv.innerHTML;
-                const type = markerDiv.getAttribute('data-type');
+            @foreach ($otherEvents as $event)
+                addDotMarker("{{ $event->latitude }}", "{{ $event->longitude }}", "{{ $event->title }}");
+            @endforeach
 
-                // Marker color
-                let iconUrl = (type === 'latest') ?
-                    'https://maps.google.com/mapfiles/ms/icons/red-dot.png' :
-                    'https://maps.google.com/mapfiles/ms/icons/green-dot.png';
-
-                // Add marker to map
-                L.marker([lat, lng], {
-                    icon: L.icon({
-                        iconUrl: iconUrl,
-                        iconSize: [32, 32],
-                        iconAnchor: [16, 32]
-                    })
-                }).addTo(map).bindPopup(popupText);
-
-                // Hide the hidden div
-                markerDiv.style.display = 'none';
-            });
         });
-    </script> --}}
+    </script>
 
 
-    <!-- Leaflet CSS & Routing Machine CSS -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-<link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
 
-<!-- Leaflet JS & Routing Machine JS -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
 
-{{-- <div id="map" style="width:100%; height:800px;"></div> --}}
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(pos) {
 
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-    // Map center: latest event first, else default
-    const mapCenter = [
-        {{ $latestEvent->latitude ?? 28.6139 }},
-        {{ $latestEvent->longitude ?? 77.209 }}
-    ];
+                    let form = new FormData();
+                    form.append("lat", pos.coords.latitude);
+                    form.append("lng", pos.coords.longitude);
+                    form.append("_token", "{{ csrf_token() }}");
 
-    // Initialize map
-    const map = L.map('map').setView(mapCenter, 13);
+                    fetch("{{ url('/ajax/get-distance') }}", {
+                            method: "POST",
+                            body: form
+                        })
+                        .then(res => res.json())
+                        .then(data => {
 
-    // OpenStreetMap tiles
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map);
+                            if (data.latest) {
+                                document.getElementById("latest-distance").innerText = data.latest
+                                    .distance;
+                                document.getElementById("latest-time").innerText = data.latest.duration;
+                            }
 
-    // User initial location
-    let userLat = {{ $userLat ?? 28.6139 }};
-    let userLng = {{ $userLng ?? 77.209 }};
-    let lastLat = null;
-    let lastLng = null;
+                            data.others.forEach(ev => {
+                                let d = document.getElementById("distance-" + ev.id);
+                                let t = document.getElementById("time-" + ev.id);
 
-    // User marker
-    const userMarker = L.marker([userLat, userLng], {
-        title: 'You are here',
-        icon: L.icon({
-            iconUrl: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png',
-            iconSize: [32, 32],
-            iconAnchor: [16, 32]
-        })
-    }).addTo(map).bindPopup("<b>You are here</b>");
+                                if (d) d.innerText = ev.distance;
+                                if (t) t.innerText = ev.duration;
+                            });
 
-    // Add event markers from hidden divs
-    const eventMarkers = [];
-    document.querySelectorAll('.map-marker').forEach(function(markerDiv) {
-        const lat = parseFloat(markerDiv.getAttribute('data-lat'));
-        const lng = parseFloat(markerDiv.getAttribute('data-lng'));
-        const popupText = markerDiv.innerHTML;
-        const type = markerDiv.getAttribute('data-type');
+                        });
 
-        let iconUrl = (type === 'latest') ?
-            'https://maps.google.com/mapfiles/ms/icons/red-dot.png' :
-            'https://maps.google.com/mapfiles/ms/icons/green-dot.png';
+                });
+            }
 
-        const marker = L.marker([lat, lng], {
-            icon: L.icon({
-                iconUrl: iconUrl,
-                iconSize: [32, 32],
-                iconAnchor: [16, 32]
-            })
-        }).addTo(map).bindPopup(popupText);
+        });
+    </script>
 
-        eventMarkers.push(marker);
-        markerDiv.style.display = 'none';
-    });
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
 
-    // Optional: pick first event as routing destination
-    const destMarker = eventMarkers[0];
-    if (destMarker) {
-        const destLatLng = destMarker.getLatLng();
+            function fetchFilteredEvents() {
+                const distance = document.getElementById('filter-distance').value;
+                const type = document.getElementById('filter-type').value;
+                const sort = document.getElementById('filter-sort').value;
 
-        // Routing control
-        const routingControl = L.Routing.control({
-            waypoints: [
-                L.latLng(userLat, userLng),
-                destLatLng
-            ],
-            routeWhileDragging: false,
-            addWaypoints: false,
-            show: true,
-            lineOptions: { styles: [{ color: 'blue', weight: 5, opacity: 0.7 }] }
-        }).addTo(map);
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(function(pos) {
+                        let form = new FormData();
+                        form.append('lat', pos.coords.latitude);
+                        form.append('lng', pos.coords.longitude);
+                        form.append('distance', distance);
+                        form.append('type', type);
+                        form.append('sort', sort);
+                        form.append('_token', '{{ csrf_token() }}');
 
-        // Track user position and update route in real time
-        if (navigator.geolocation) {
-            navigator.geolocation.watchPosition(function(pos) {
-                const lat = pos.coords.latitude;
-                const lng = pos.coords.longitude;
+                        fetch("{{ url('/ajax/filter-events') }}", {
+                                method: 'POST',
+                                body: form
+                            })
+                            .then(res => res.json())
+                            .then(data => {
+                                // Update sidebar
+                                const sidebar = document.querySelector('.sidebar');
+                                let html = '';
 
-                // Update every meter
-                if (!lastLat || getDistance(lastLat, lastLng, lat, lng) >= 1) {
-                    lastLat = lat;
-                    lastLng = lng;
+                                if (data.latest) {
+                                    html += `
+                        <img src="/admin/uploads/event/${data.latest.media_path}" class="me-3" style="height:300px; width:100%;">
+                        <div class="post-card d-flex mt-2">
+                            <div>
+                                <small class="text-muted">${data.latest.distance} | ${data.latest.duration}</small>
+                                <h6 class="text-white mt-1">${data.latest.title}</h6>
+                                <p class="small">${data.latest.description}</p>
+                            </div>
+                        </div>`;
+                                }
 
-                    // Move user marker
-                    userMarker.setLatLng([lat, lng]);
+                                data.others.forEach(ev => {
+                                    html += `
+                        <div class="post-card d-flex">
+                            <img src="/admin/uploads/event/${ev.media_path}" class="me-3" style="height:80px; width:80px; object-fit:cover;" alt="Event Image">
+                            <div>
+                                <small class="text-muted">${ev.distance} | ${ev.duration}</small>
+                                <h6 class="text-white mt-1">${ev.title}</h6>
+                                <p class="small">${ev.description.substring(0, 50)}... <a href="/eventdetail/${ev.id}" class="text-info">Read more</a></p>
+                            </div>
+                        </div>`;
+                                });
 
-                    // Update route dynamically
-                    routingControl.setWaypoints([
-                        L.latLng(lat, lng),
-                        destLatLng
-                    ]);
+                                sidebar.innerHTML = html;
 
-                    // Pan map to follow user
-                    map.panTo([lat, lng]);
+                                // Update map
+                                const map = new google.maps.Map(document.getElementById("eventMap"), {
+                                    center: {
+                                        lat: pos.coords.latitude,
+                                        lng: pos.coords.longitude
+                                    },
+                                    zoom: 12
+                                });
+
+                                function addDotMarker(lat, lng, title) {
+                                    new google.maps.Marker({
+                                        position: {
+                                            lat: parseFloat(lat),
+                                            lng: parseFloat(lng)
+                                        },
+                                        map: map,
+                                        title: title,
+                                        icon: {
+                                            path: google.maps.SymbolPath.CIRCLE,
+                                            scale: 6,
+                                            fillColor: "#ff3333",
+                                            fillOpacity: 1,
+                                            strokeWeight: 2,
+                                            strokeColor: "#fff"
+                                        }
+                                    });
+                                }
+
+                                if (data.latest) {
+                                    addDotMarker(data.latest.latitude, data.latest.longitude, data
+                                        .latest.title);
+                                }
+
+                                data.others.forEach(ev => {
+                                    addDotMarker(ev.latitude, ev.longitude, ev.title);
+                                });
+
+                            });
+                    });
                 }
-            }, function(err){
-                console.log("Geolocation error:", err);
-            }, { enableHighAccuracy: true, maximumAge: 0, timeout: 5000 });
-        }
-    }
+            }
 
-    // Haversine formula to calculate distance in meters
-    function getDistance(lat1, lng1, lat2, lng2){
-        const R = 6371000;
-        const dLat = (lat2-lat1)*Math.PI/180;
-        const dLng = (lng2-lng1)*Math.PI/180;
-        const a = Math.sin(dLat/2)**2 +
-                  Math.cos(lat1*Math.PI/180) *
-                  Math.cos(lat2*Math.PI/180) *
-                  Math.sin(dLng/2)**2;
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-        return R * c;
-    }
-});
-</script>
+            // Add event listeners
+            document.getElementById('filter-distance').addEventListener('change', fetchFilteredEvents);
+            document.getElementById('filter-type').addEventListener('change', fetchFilteredEvents);
+            document.getElementById('filter-sort').addEventListener('change', fetchFilteredEvents);
 
-
-
-
+        });
+    </script>
 @endsection

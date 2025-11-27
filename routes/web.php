@@ -53,6 +53,8 @@ Route::get('community',[HomeController::class,'community'])->name('community');
 Route::get('login',[HomeController::class,'login'])->name('login');
 Route::get('register',[HomeController::class,'register'])->name('register');
 Route::get('map-view',[HomeController::class,'map'])->name('map');
+Route::post('/ajax/get-distance', [HomeController::class, 'ajaxDistance']);
+Route::post('/ajax/filter-events', [HomeController::class, 'ajaxFilterEvents']);
 
 Route::post('/register', [UserController::class, 'store'])->name('register.store');
 Route::post('/login', [UserController::class, 'login'])->name('login.post');
