@@ -1,6 +1,6 @@
 @extends('front.layouts.main')
 @section('content')
-    <section class="mb-0">
+    <section class="mb-0 pt-5">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12">
@@ -76,7 +76,7 @@
                     </div>
 
                     <div class="image-section">
-                        <img src="/front/asset/img/home/register.jpg" alt="Crosswalk Image" height="400px" width="100%" />
+                        <img src="front/asset/img/home/register.jpg" alt="Crosswalk Image" height="400px" width="100%" />
                     </div>
                 </div>
             </div>

@@ -104,9 +104,9 @@
 
                                     @php
                                         // Fetch distinct labels from events
-                                        $labels = \App\Models\Event::pluck('label')
-                                            ->map(function ($label) {
-                                                return $label ?: 'General'; // Replace blank/null with 'General'
+                                        $labels = \App\Models\Event::pluck('media_type')
+                                            ->map(function ($media_type) {
+                                                return $media_type ?: 'General'; // Replace blank/null with 'General'
                                             })
                                             ->unique();
                                     @endphp
@@ -153,7 +153,7 @@
                     <div class="col-lg-4 col-md-6 col-12">
                         <div class="card product-card h-100">
                             <span
-                                class="badge bg-info-color position-absolute top-0 end-0 m-3">{{ $event->label ?? 'General' }}</span>
+                                class="badge bg-info-color position-absolute top-0 end-0 m-3">{{ $event->media_type ?? 'General' }}</span>
                             <img src="{{ asset('admin/uploads/event/' . $event->media_path) }}" class="card-img-top"
                                 alt="Event Image">
                             <div class="card-body">
@@ -248,7 +248,7 @@
                     </div>
                 </div>
                 <div class="col-lg-5">
-                    <img src="/front/asset/img/home/hand-holding.png" alt="" class="img-mic">
+                    <img src="front/asset/img/home/hand-holding.png" alt="" class="img-mic">
                 </div>
             </div>
         </div>

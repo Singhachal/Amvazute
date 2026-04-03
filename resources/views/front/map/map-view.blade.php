@@ -140,7 +140,7 @@
 
     </style>
     <section class="">
-        <div class="container-fluid">
+        <div class="container-fluid pt-5">
             <div class="row g-0">
                 <!-- Sidebar -->
                 <div class="col-lg-4 col-md-12 sidebar mt-5 mt-sm-1 p-3">
@@ -170,7 +170,7 @@
 
                         <select id="filter-type" class="form-select filter-button">
                             <option value="">Post Type</option>
-                            @foreach (\App\Models\Event::distinct('label')->pluck('label') as $label)
+                            @foreach (\App\Models\Event::distinct('label')->pluck('media_type') as $label)
                                 <option value="{{ $label }}">{{ ucfirst($label) }}</option>
                             @endforeach
                         </select>
@@ -182,7 +182,7 @@
                     </div>
 
 
-                    {{-- <img src="/front/asset/img/home/Frame1.png" class="me-3" alt="" style="height:300px; width:100%;">
+                    {{-- <img src="front/asset/img/home/Frame1.png" class="me-3" alt="" style="height:300px; width:100%;">
                     <div class="post-card d-flex">
                         <div>
                             <small class="text-muted">300m away | 15 min ago</small>
@@ -370,7 +370,7 @@
 
                                 if (data.latest) {
                                     html += `
-                        <img src="/admin/uploads/event/${data.latest.media_path}" class="me-3" style="height:300px; width:100%;">
+                        <img src="admin/uploads/event/${data.latest.media_path}" class="me-3" style="height:300px; width:100%;">
                         <div class="post-card d-flex mt-2">
                             <div>
                                 <small class="text-muted">${data.latest.distance} | ${data.latest.duration}</small>
@@ -383,7 +383,7 @@
                                 data.others.forEach(ev => {
                                     html += `
                         <div class="post-card d-flex">
-                            <img src="/admin/uploads/event/${ev.media_path}" class="me-3" style="height:80px; width:80px; object-fit:cover;" alt="Event Image">
+                            <img src="admin/uploads/event/${ev.media_path}" class="me-3" style="height:80px; width:80px; object-fit:cover;" alt="Event Image">
                             <div>
                                 <small class="text-muted">${ev.distance} | ${ev.duration}</small>
                                 <h6 class="text-white mt-1">${ev.title}</h6>

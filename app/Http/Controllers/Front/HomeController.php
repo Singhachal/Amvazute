@@ -12,6 +12,9 @@ use App\Models\Enquiry;
 use App\Models\Blog;
 use Stichoza\GoogleTranslate\GoogleTranslate;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\EnquiryMail;
+
 
 class HomeController extends Controller
 {
@@ -885,34 +888,90 @@ public function ajaxFilterEvents(Request $request)
 
 
 
-    public function storeEnquiryForm(Request $request)
-    {
-        $request->validate([
-            'name'       => 'required|string|max:255',
-            'email'      => 'required|email|max:255',
-            'subject'    => 'required|string|max:255',
-            'message'    => 'required|string',
-            'attachment' => 'nullable|file|mimes:jpg,jpeg,png,pdf,mp4|max:10240', // optional
-        ]);
+    // public function storeEnquiryForm(Request $request)
+    // {
+    //     $request->validate([
+    //         'name'       => 'required|string|max:255',
+    //         'email'      => 'required|email|max:255',
+    //         'subject'    => 'required|string|max:255',
+    //         'message'    => 'required|string',
+    //         'attachment' => 'nullable|file|mimes:jpg,jpeg,png,pdf,mp4|max:10240', // optional
+    //     ]);
 
-        $data = $request->only('name', 'email', 'subject', 'message');
+    //     $data = $request->only('name', 'email', 'subject', 'message');
 
-        // Handle attachment if uploaded
-        if ($request->hasFile('attachment')) {
-            $file = $request->file('attachment');
-            $filename = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('uploads/enquiry'), $filename);
-            // Store relative path to asset folder
-            $data['attachment'] = 'uploads/enquiry/' . $filename;
-        }
+    //     // Handle attachment if uploaded
+    //     if ($request->hasFile('attachment')) {
+    //         $file = $request->file('attachment');
+    //         $filename = time() . '_' . $file->getClientOriginalName();
+    //         $file->move(public_path('uploads/enquiry'), $filename);
+    //         // Store relative path to asset folder
+    //         $data['attachment'] = 'uploads/enquiry/' . $filename;
+    //     }
 
-        $data['status'] = 0; // pending
+    //     $data['status'] = 0; // pending
 
-        Enquiry::create($data);
+    //     Enquiry::create($data);
 
-        return response()->json(['status' => 'success', 'message' => 'Enquiry submitted successfully!']);
+    //     return response()->json(['status' => 'success', 'message' => 'Enquiry submitted successfully!']);
+    // }
+
+
+    
+public function storeEnquiryForm(Request $request)
+{
+    $request->validate([
+        'name'       => 'required|string|max:255',
+        'email'      => 'required|email|max:255',
+        'subject'    => 'required|string|max:255',
+        'message'    => 'required|string',
+        'attachment' => 'nullable|file|mimes:jpg,jpeg,png,pdf,mp4|max:10240',
+    ]);
+
+    $data = $request->only('name', 'email', 'subject', 'message');
+
+    // Upload file
+    if ($request->hasFile('attachment')) {
+    $file = $request->file('attachment');
+
+    $extension = $file->getClientOriginalExtension();
+    $filename = time() . '.' . $extension;
+
+    $file->move(public_path('uploads/enquiry'), $filename);
+
+    $data['attachment'] = 'uploads/enquiry/' . $filename;
+}
+
+    $data['status'] = 0;
+
+    // Save in DB
+    Enquiry::create($data);
+
+    // 🔥 SEND EMAIL
+    $mail = new EnquiryMail($data);
+
+    // ✅ Attach only if file exists
+    if ($request->hasFile('attachment') && $request->file('attachment')->isValid()) {
+        
+        $file = $request->file('attachment');
+
+        $mail->attach(
+            $file->getRealPath(),
+            [
+                'as' => $file->getClientOriginalName(),
+                'mime' => $file->getMimeType()
+            ]
+        );
     }
 
+    // 👉 Send to this Gmail
+    Mail::to('amvazut.ro@gmail.com')->send($mail);
+
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Enquiry submitted & email sent!'
+    ]);
+}
 
 
 public function showEventMap($id)

@@ -93,19 +93,18 @@
         }
     </style>
     <section class="">
-        <div class="container-fluid">
+        <div class="container-fluid pt-5">
             <div class="row g-0">
                 <!-- Sidebar -->
                 <div class="col-lg-4 col-md-12 sidebar mt-5 mt-sm-1 p-3">
 
 
-                    @if ($eventMap->media->isNotEmpty())
-                        <img src="{{ asset('admin/uploads/event/' . $eventMap->media_path) }}" class="me-3"
-                            alt="{{ $eventMap->title }}" style="height:300px; width:100%;">
-                    @else
-                        <img src="{{ asset('front/asset/img/home/Frame1.png') }}" class="me-3" alt="Default Image"
-                            style="height:300px; width:100%;">
-                    @endif
+                    <img src="{{ !empty($eventMap->media_path) 
+                            ? asset('admin/uploads/event/' . $eventMap->media_path) 
+                            : asset('front/asset/img/home/Frame1.png') }}" 
+                     class="me-3" 
+                     alt="{{ $eventMap->title ?? 'Default Image' }}" 
+                     style="height:300px; width:100%;">
 
                     <div class="post-card d-flex">
                         <div>
@@ -122,15 +121,10 @@
                         <div class="post-card d-flex mb-3">
 
 
-                            @php
-                                $mediaPath = $related->media->isNotEmpty()
-                                    ? $related->media->first()->media_path
-                                    : null;
+                           @php
                                 $eventImagePath = $related->media_path ?? null;
-
-                                if (!empty($mediaPath)) {
-                                    $imageUrl = asset('admin/uploads/event/' . $mediaPath);
-                                } elseif (!empty($eventImagePath)) {
+                            
+                                if (!empty($eventImagePath)) {
                                     $imageUrl = asset('admin/uploads/event/' . $eventImagePath);
                                 } else {
                                     $imageUrl = 'https://via.placeholder.com/80x60';

@@ -110,7 +110,7 @@
     </style>
     <!-- JS -->
     <script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js"></script>
-    <script src="/front/asset/js/main.js"></script>
+    <script src="front/asset/js/main.js"></script>
     <script>
         const lightbox = GLightbox({
             selector: '.glightbox'

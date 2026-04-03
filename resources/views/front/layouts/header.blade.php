@@ -1,8 +1,29 @@
+<style>
+    /* Fix language dropdown text visibility */
+.dropdown-menu {
+    background-color: #ffffff !important;
+}
+
+.dropdown-menu .dropdown-item {
+    color: #000000 !important;   /* make text visible */
+    background-color: transparent;
+}
+
+.dropdown-menu .dropdown-item:hover {
+    background-color: #f1f1f1;   /* light hover */
+    color: #000000;
+}
+
+</style>
 <nav class="navbar navbar-expand-lg custom-navbar position-fixed top-0 w-100">
     <div class="container px-4 py-2">
         <!-- Brand -->
-        <a class="navbar-brand" href="/">
+        <!-- <a class="navbar-brand" href="/">
             AM <span class="text-danger">VAZUT</span>
+        </a> -->
+
+        <a class="navbar-brand d-flex align-items-center " href="/">
+            <img src="{{ asset('front/asset/img/logo.jpeg') }}" style=" border-radius: 50%;  height: 80px; width:auto" alt="Logo" class="logo-img">
         </a>
 
         <!-- Mobile toggle button -->
@@ -79,88 +100,52 @@
                     <i class="fas fa-globe"></i>
                 </button>
 
-                <!-- Language Dropdown -->
-                {{-- <div class="dropdown">
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageBtn">
-                        @foreach (available_languages() as $code => $lang)
-                            <li>
-                                <a class="dropdown-item d-flex align-items-center"
-                                    href="{{ url('set-locale/' . $code) }}">
-                                    <img src="{{ asset('front/assets/img/flags/' . $lang['flag']) }}"
-                                        alt="{{ $lang['name'] }}" class="me-2" width="20">
-                                    {{ $lang['name'] }}
-                                </a>
-                            </li>
-                        @endforeach
-                    </ul>
-                </div> --}}
 
-                {{-- <div class="dropdown">
+                @php
+                    // Map language codes to flag country codes
+                    $flagMap = [
+                        'en' => 'us', // English -> US flag
+                        'fr' => 'fr', // French
+                        'es' => 'es', // Spanish
+                        'de' => 'de', // German
+                        'it' => 'it', // Italian
+                        'pt' => 'pt', // Portuguese
+                        'ru' => 'ru', // Russian
+                        'tr' => 'tr', // Turkish
+                        'cn' => 'cn', // Chinese
+                        'jp' => 'jp', // Japanese
+                        'in' => 'in', // Hindi/India
+                    ];
+                @endphp
+
+                <div class="dropdown" style="background: none !important;">
                     <button class="btn btn-light dropdown-toggle" type="button" id="languageBtn"
                         data-bs-toggle="dropdown" aria-expanded="false">
                         🌐 Language
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageBtn">
                         @foreach (available_languages() as $code => $lang)
+                            @php
+                                $flagCode = $flagMap[$code] ?? strtolower($code);
+                            @endphp
                             <li>
                                 <a class="dropdown-item d-flex align-items-center"
                                     href="{{ route('set-locale', $code) }}">
-                                    <img src="{{ asset('front/assets/img/flags/' . $lang['flag']) }}"
-                                        alt="{{ $lang['name'] }}" class="me-2" width="20">
-                                    {{ $lang['name'] }}
+
+                                    <img src="https://flagcdn.com/20x15/{{ $flagCode }}.png"
+                                        alt="{{ $lang['name'] }}" class="me-2" width="20" height="15">
+                                    <span>{{ $lang['name'] }}</span>
                                 </a>
                             </li>
                         @endforeach
                     </ul>
-                </div> --}}
-
-                @php
-    // Map language codes to flag country codes
-    $flagMap = [
-        'en' => 'us',   // English -> US flag
-        'fr' => 'fr',   // French
-        'es' => 'es',   // Spanish
-        'de' => 'de',   // German
-        'it' => 'it',   // Italian
-        'pt' => 'pt',   // Portuguese
-        'ru' => 'ru',   // Russian
-        'tr' => 'tr',   // Turkish
-        'cn' => 'cn',   // Chinese
-        'jp' => 'jp',   // Japanese
-        'in' => 'in',   // Hindi/India
-    ];
-@endphp
-
-<div class="dropdown" style="background: none !important;">
-    <button class="btn btn-light dropdown-toggle" type="button" id="languageBtn"
-        data-bs-toggle="dropdown" aria-expanded="false">
-        🌐 Language
-    </button>
-    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageBtn">
-        @foreach (available_languages() as $code => $lang)
-            @php
-                $flagCode = $flagMap[$code] ?? strtolower($code);
-            @endphp
-            <li>
-                <a class="dropdown-item d-flex align-items-center"
-                   href="{{ route('set-locale', $code) }}">
-
-                    <img src="https://flagcdn.com/20x15/{{ $flagCode }}.png"
-                         alt="{{ $lang['name'] }}" class="me-2" width="20" height="15">
-                    <span>{{ $lang['name'] }}</span>
-                </a>
-            </li>
-        @endforeach
-    </ul>
-</div>
+                </div>
 
 
 
 
 
-                {{-- <button class="icon-btn has-notification" title="Notifications">
-                    <i class="fas fa-bell"></i>
-                </button> --}}
+
 
                 <div class="nav-separator d-none d-lg-block"></div>
 
@@ -171,89 +156,8 @@
 </nav>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 
-{{-- <script>
-    // Tab active functionality
-    document.addEventListener('DOMContentLoaded', function() {
-        const navLinks = document.querySelectorAll('.navbar-nav .nav-link');
 
-        // Set initial active tab with notification
-        navLinks[3].classList.add('has-notification'); // Events tab initially has notification
 
-        navLinks.forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault(); // Prevent default link behavior
-
-                // Remove active class and notification from all nav links
-                navLinks.forEach(navLink => {
-                    navLink.classList.remove('active', 'has-notification');
-                });
-
-                // Add active class and notification to clicked link
-                this.classList.add('active', 'has-notification');
-
-                // Close mobile menu if open
-                const navbarCollapse = document.getElementById('navbarNav');
-                const bsCollapse = bootstrap.Collapse.getInstance(navbarCollapse);
-                if (bsCollapse && navbarCollapse.classList.contains('show')) {
-                    bsCollapse.hide();
-                }
-
-                // Optional: You can add page content switching logic here
-                console.log('Active tab:', this.textContent.trim());
-            });
-        });
-    });
-</script> --}}
-
-{{-- <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const navLinks = document.querySelectorAll('.navbar-nav .nav-link');
-
-        // Get saved active tab from localStorage
-        const savedHref = localStorage.getItem('activeTab');
-
-        navLinks.forEach(link => {
-            const href = link.getAttribute('href');
-
-            // If savedHref matches this link, make it active
-            if (savedHref && href === savedHref) {
-                link.classList.add('active', 'has-notification');
-            }
-
-            // Add click listener
-            link.addEventListener('click', function (e) {
-                // Prevent default only for dummy links
-                if (href === '#' || href === '') {
-                    e.preventDefault();
-                }
-
-                // Remove active + notification from all
-                navLinks.forEach(nav => nav.classList.remove('active', 'has-notification'));
-
-                // Add to clicked
-                this.classList.add('active', 'has-notification');
-
-                // Save clicked tab in localStorage
-                localStorage.setItem('activeTab', href);
-
-                // Optional: close mobile navbar if open
-                const navbarCollapse = document.getElementById('navbarNav');
-                const bsCollapse = bootstrap.Collapse.getInstance(navbarCollapse);
-                if (bsCollapse && navbarCollapse.classList.contains('show')) {
-                    bsCollapse.hide();
-                }
-            });
-        });
-
-        // If no tab is saved yet, default to Home
-        if (!savedHref) {
-            const homeLink = document.querySelector('.nav-link[href="/"]');
-            if (homeLink) {
-                homeLink.classList.add('active');
-            }
-        }
-    });
-</script> --}}
 <style>
     .icon-btn {
         font-size: 24px;

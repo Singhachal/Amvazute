@@ -105,9 +105,18 @@
             <!-- Contact Info -->
             <div class="col-lg-2 col-md-6 col-6">
                 <h5 class="mb-4">Mobile Application</h5>
-                <p>Take AM VAZUT on the go!</p>
+                <!-- <p>Take AM VAZUT on the go!</p> -->
+                <p>
+                    <a href="https://amvazut.ro/" target="_blank" style="color:#000; text-decoration:none;">
+                        Take AM VAZUT on the go!
+                    </a>
+                </p>
                 {{-- <button type="submit" class="btn-primary-hero signup-btn mt-3 " style="font-size:13px;">Download
                     App</button> --}}
+
+                     <a class="navbar-brand d-flex align-items-center " href="/">
+                        <img src="{{ asset('front/asset/img/logo.jpeg') }}" style=" border-radius: 50%;" alt="Logo" class="logo-img">
+                    </a>
 
 
 
@@ -188,7 +197,7 @@
     }
 
     #div-card-section>div {
-        background: url('../img/home/Hired.png');
+        background: url('.../img/home/Hired.png');
         background-position: center;
         background-size: 100% 100%;
         padding: 60px 80px;

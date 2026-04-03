@@ -12,7 +12,7 @@
         }
     </style>
 
-    <main>
+    <main class="gav pt-5">
         <section id="banner-images">
             <div class="container">
                 <div class="row hero-content">
@@ -152,7 +152,7 @@
                                 <div class="swiper-slide">
                                     <div class="card product-card h-100">
                                         <span class="badge bg-info-color position-absolute top-0 end-0 m-3">
-                                            {{ $event->label ?? 'Event' }}
+                                            {{ $event->media_type ?? 'Event' }}
                                         </span>
 
                                         <img src="{{ asset('admin/uploads/event/' . $event->media_path) }}"
@@ -224,21 +224,21 @@
                         </div>
                         <ul class="ps-0">
                             <li class="d-flex">
-                                <img src="/front/asset/img/home/arrow.png" alt="right icon" height="22px">&nbsp;
+                                <img src="front/asset/img/home/arrow.png" alt="right icon" height="22px">&nbsp;
                                 <p>{{ __('messages.post_point1') }}</p>
                             </li>
                             <li class="d-flex">
-                                <img src="/front/asset/img/home/arrow.png" alt="right icon" height="22px">&nbsp;
+                                <img src="front/asset/img/home/arrow.png" alt="right icon" height="22px">&nbsp;
                                 <p>{{ __('messages.post_point2') }}
                                 </p>
                             </li>
                             <li class="d-flex">
-                                <img src="/front/asset/img/home/arrow.png" alt="right icon" height="22px">&nbsp;
+                                <img src="front/asset/img/home/arrow.png" alt="right icon" height="22px">&nbsp;
                                 <p>{{ __('messages.post_point3') }}
                                 </p>
                             </li>
                             <li class="d-flex">
-                                <img src="/front/asset/img/home/arrow.png" alt="right icon" height="22px">&nbsp;
+                                <img src="front/asset/img/home/arrow.png" alt="right icon" height="22px">&nbsp;
                                 <p>{{ __('messages.post_point4') }}</p>
                             </li>
                         </ul>
@@ -273,15 +273,15 @@
                             </p>
                             <ul class="ps-0 text-14">
                                 <li class="d-flex mb-2">
-                                    <img src="/front/asset/img/home/arrow.png" alt="right icon" height="20px">&nbsp;
+                                    <img src="front/asset/img/home/arrow.png" alt="right icon" height="20px">&nbsp;
                                     <p class=" m-0">{{ __('messages.safety_point1') }}</p>
                                 </li>
                                 <li class="d-flex mb-2">
-                                    <img src="/front/asset/img/home/arrow.png" alt="right icon" height="20px">&nbsp;
+                                    <img src="front/asset/img/home/arrow.png" alt="right icon" height="20px">&nbsp;
                                     <p class=" m-0">{{ __('messages.safety_point2') }}.</p>
                                 </li>
                                 <li class="d-flex mb-0 mb-2">
-                                    <img src="/front/asset/img/home/arrow.png" alt="right icon" height="20px">&nbsp;
+                                    <img src="front/asset/img/home/arrow.png" alt="right icon" height="20px">&nbsp;
                                     <p class=" m-0">{{ __('messages.safety_point3') }}. </p>
                                 </li>
                             </ul>
@@ -296,15 +296,15 @@
                             <p class=" text-14">{{ __('messages.trust_description') }}</p>
                             <ul class="ps-0 text-14">
                                 <li class="d-flex mb-2">
-                                    <img src="/front/asset/img/home/arrow.png" alt="right icon" height="20px">&nbsp;
+                                    <img src="front/asset/img/home/arrow.png" alt="right icon" height="20px">&nbsp;
                                     <p class=" m-0">{{ __('messages.trust_point1') }}</p>
                                 </li>
                                 <li class="d-flex mb-2">
-                                    <img src="/front/asset/img/home/arrow.png" alt="right icon" height="20px">&nbsp;
+                                    <img src="front/asset/img/home/arrow.png" alt="right icon" height="20px">&nbsp;
                                     <p class=" m-0">{{ __('messages.trust_point2') }}</p>
                                 </li>
                                 <li class="d-flex mb-0 mb-2">
-                                    <img src="/front/asset/img/home/arrow.png" alt="right icon" height="20px">&nbsp;
+                                    <img src="front/asset/img/home/arrow.png" alt="right icon" height="20px">&nbsp;
                                     <p class=" m-0">{{ __('messages.trust_point3') }}
                                     </p>
                                 </li>
@@ -330,23 +330,23 @@
                         </div>
                         <ul class="ps-0 text-14">
                             <li class="d-flex">
-                                <img src="/front/asset/img/home/arrow.png" alt="right icon" height="22px">&nbsp;
+                                <img src="front/asset/img/home/arrow.png" alt="right icon" height="22px">&nbsp;
                                 <p>{{ __('messages.home_about_point1') }}</p>
                             </li>
                             <li class="d-flex">
-                                <img src="/front/asset/img/home/arrow.png" alt="right icon" height="22px">&nbsp;
+                                <img src="front/asset/img/home/arrow.png" alt="right icon" height="22px">&nbsp;
                                 <p>{{ __('messages.home_about_point2') }}</p>
                             </li>
                             <li class="d-flex">
-                                <img src="/front/asset/img/home/arrow.png" alt="right icon" height="22px">&nbsp;
+                                <img src="front/asset/img/home/arrow.png" alt="right icon" height="22px">&nbsp;
                                 <p>{{ __('messages.home_about_point3') }}</p>
                             </li>
                             <li class="d-flex">
-                                <img src="/front/asset/img/home/arrow.png" alt="right icon" height="22px">&nbsp;
+                                <img src="front/asset/img/home/arrow.png" alt="right icon" height="22px">&nbsp;
                                 <p>{{ __('messages.home_about_point4') }} </p>
                             </li>
                             <li class="d-flex">
-                                <img src="/front/asset/img/home/arrow.png" alt="right icon" height="22px">&nbsp;
+                                <img src="front/asset/img/home/arrow.png" alt="right icon" height="22px">&nbsp;
                                 <p>{{ __('messages.home_about_point5') }}</p>
                             </li>
                         </ul>
@@ -380,7 +380,7 @@
                 {{-- <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
                     <div class="col">
                         <div class="card h-100 shadow-sm">
-                            <img src="/front/asset/img/home/Frame5.png" class="card-img-top" alt="Blog post image">
+                            <img src="front/asset/img/home/Frame5.png" class="card-img-top" alt="Blog post image">
                             <div class="card-body">
                                 <h5 class="card-title">10 Tips for Productive Remote Work</h5>
                                 <p class="card-text">Learn how to stay focused and efficient while working from home with
@@ -399,7 +399,7 @@
 
                     <div class="col">
                         <div class="card h-100 shadow-sm">
-                            <img src="/front/asset/img/home/Frame6.png" class="card-img-top" alt="Blog post image">
+                            <img src="front/asset/img/home/Frame6.png" class="card-img-top" alt="Blog post image">
                             <div class="card-body">
                                 <h5 class="card-title">The Future of Artificial Intelligence</h5>
                                 <p class="card-text">Explore the potential impact of AI on various industries and our daily
@@ -418,7 +418,7 @@
 
                     <div class="col">
                         <div class="card h-100 shadow-sm">
-                            <img src="/front/asset/img/home/Frame7.png" class="card-img-top" alt="Blog post image">
+                            <img src="front/asset/img/home/Frame7.png" class="card-img-top" alt="Blog post image">
                             <div class="card-body">
                                 <h5 class="card-title">Sustainable Living: Small Changes, Big Impact</h5>
                                 <p class="card-text">Discover easy ways to reduce your carbon footprint and live a more
@@ -477,7 +477,7 @@
                         </div>
                     </div>
                     <div class="col-lg-5">
-                        <img src="/front/asset/img/home/hand-holding.png" alt="" class="img-mic">
+                        <img src="front/asset/img/home/hand-holding.png" alt="" class="img-mic">
                     </div>
                 </div>
             </div>

@@ -52,7 +52,7 @@
                                 <div class="col-md-6 col-sm-12 mb-2">
                                     <div class="card" style="border: 1px solid rgb(168, 165, 165);">
                                         <a href="{{ route('blog-details', ['slug' => $blog->slug]) }}">
-                                            <img src="{{ asset($blog->cover_image_url) }}" height="182"
+                                            <img src="{{ asset('admin/uploads/blogs/'.$blog->cover_image) }}" height="182"
                                                 alt="{{ $blog->title }}" class="card-img-top">
                                         </a>
                                         <div class="card-body card-body-padding">

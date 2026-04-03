@@ -3,7 +3,7 @@
     <main id="main-div">
 
         <section>
-            <div class="container my-5">
+            <div class="container my-5 pt-5">
                 <div class="row g-0">
                     <div class="col-lg-12 text-center">
                         <h2 class="heading">{!! __('messages.create_post_title') !!}</h2>
@@ -92,9 +92,8 @@
                                 <label class="form-label">Select Post Type</label>
                                 <select class="form-select form-control" name="postType" required>
                                     <option selected disabled>select your post type</option>
-                                    <option value="image">Image</option>
-                                    <option value="video">Video</option>
-                                    <option value="text">Text</option>
+                                    <option value="General">General</option>
+                                    <option value="Alert">Alert</option>
                                 </select>
                             </div>
 
@@ -155,9 +154,8 @@
                                 <label class="form-label">Select Post Type</label>
                                 <select class="form-select form-control" name="postType" required>
                                     <option selected disabled>select your post type</option>
-                                    <option value="image">Image</option>
-                                    <option value="video">Video</option>
-                                    <option value="text">Text</option>
+                                    <option value="General">General</option>
+                                    <option value="Alert">Alert</option>
                                 </select>
                             </div>
 

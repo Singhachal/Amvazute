@@ -44,7 +44,7 @@ $queryString = $queryString ?? '';
 }
 </style>
 <main class="contact">
-    <section class="mt-5 pt-4 breadcrumbs mb-0">
+    <section class="mt-5 pt-5 breadcrumbs mb-0">
         <div class="container">
             <div class="row mt-sm-5 mt-3 margin-on-mobile">
                 <div class="col-lg-12 text-center">
@@ -65,7 +65,7 @@ $queryString = $queryString ?? '';
                         </h3> --}}
                             <div class="card" style="border: 1px solid rgb(168, 165, 165);">
                                 <a href="#">
-                                    <img src="{{ asset($currentBlog->banner_image_url) }}" height="182"
+                                    <img src="  {{ asset('admin/uploads/blogs/'.$currentBlog->cover_image) }}" height="182"
                                         alt="{{ $currentBlog->title }}" class="card-img-top img-detailss">
                                 </a>
                                 <div class="card-body card-body-padding">

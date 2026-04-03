@@ -11,7 +11,7 @@
                 <div class="col-lg-12 col-md-12">
                     <div class="swiper mmySwiperDifference">
                         <div class="swiper-wrapper">
-                            <!-- Slide 1 -->
+                             Slide 1 
                             <div class="swiper-slide">
                                 <img src="{{ asset('front/asset/img/home/Frame1.png') }}" class="card-img-top"
                                     alt="Shirt Soft Cotton" height="350px" />
@@ -30,7 +30,7 @@
                             </div>
                         </div>
 
-                        <!-- Navigation & Pagination -->
+                         Navigation & Pagination 
                         <div class="swiper-button-next swiper-button-next-one"></div>
                         <div class="swiper-button-prev swiper-button-prev-one"></div>
                         <div class="swiper-pagination d-none"></div>

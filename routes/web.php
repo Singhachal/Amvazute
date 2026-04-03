@@ -18,6 +18,8 @@ use App\Http\Controllers\Front\BlogsController;
 use App\Http\Controllers\LocaleController;
 use App\Models\Event;
 use Stichoza\GoogleTranslate\GoogleTranslate;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 
 
 
@@ -36,6 +38,10 @@ use Stichoza\GoogleTranslate\GoogleTranslate;
 // Route::get('/', function () {
 //     return view('welcome');
 // });
+
+
+
+
 
 
 Route::get('/',[HomeController::class,'index'])->name('home');
@@ -261,3 +267,34 @@ Route::prefix('admin')->group(function () {
     });
 });
 
+
+
+Route::get('/clear-cache-temp', function() {
+    // Clear configuration cache
+    Artisan::call('config:clear');
+
+    // Clear application cache
+    Artisan::call('cache:clear');
+
+    // Clear route cache
+    Artisan::call('route:clear');
+
+    // Clear compiled views
+    Artisan::call('view:clear');
+
+    // Optional: rebuild config cache (optimized)
+    Artisan::call('config:cache');
+
+    // Optional: optimize (compile commonly used classes)
+    Artisan::call('optimize');
+
+    return "✅ Cache cleared and app optimized!";
+});
+Route::get('/test-db', function() {
+    try {
+        \DB::connection()->getPdo();
+        return "Database connected!";
+    } catch (\Exception $e) {
+        return "Error: ".$e->getMessage();
+    }
+});

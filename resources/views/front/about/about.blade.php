@@ -1,7 +1,7 @@
 @extends('front.layouts.main')
 @section('content')
    
-    <section class="difference-section pt-4">
+    <section class="difference-section pt-5">
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-lg-12 col-md-12">
@@ -17,7 +17,7 @@
                                 <p class="text-14">{{ __('messages.about_desc4') }}</p>
                              </div>
                             <div class="col-lg-6">
-                                <img src="/front/asset/img/home/about.jpg" alt="" height="480px" width="100%"
+                                <img src="front/asset/img/home/about.jpg" alt="" height="480px" width="100%"
                                     class="ps-5 pt-5">
                             </div>
                         </div>
@@ -67,31 +67,31 @@
                     </p>
                     <ul class="ps-0">
                         <li class="d-flex">
-                            <img src="/front/asset/img/home/arrow.png" alt="right icon" height="22px">&nbsp;
+                            <img src="front/asset/img/home/arrow.png" alt="right icon" height="22px">&nbsp;
                             <p class="text-14">{{ __('messages.about_share_post1') }}
                             </p>
                         </li>
                         <li class="d-flex">
-                            <img src="/front/asset/img/home/arrow.png" alt="right icon" height="22px">&nbsp;
+                            <img src="front/asset/img/home/arrow.png" alt="right icon" height="22px">&nbsp;
                             <p class="text-14">{{ __('messages.about_share_post2') }}</p>
                         </li>
                         <li class="d-flex">
-                            <img src="/front/asset/img/home/arrow.png" alt="right icon" height="22px">&nbsp;
+                            <img src="front/asset/img/home/arrow.png" alt="right icon" height="22px">&nbsp;
                             <p class="text-14">{{ __('messages.about_share_post3') }} </p>
                         </li>
                         <li class="d-flex">
-                            <img src="/front/asset/img/home/arrow.png" alt="right icon" height="22px">&nbsp;
+                            <img src="front/asset/img/home/arrow.png" alt="right icon" height="22px">&nbsp;
                             <p class="text-14">{{ __('messages.about_share_post4') }}</p>
                         </li>
                         <li class="d-flex">
-                            <img src="/front/asset/img/home/arrow.png" alt="right icon" height="22px">&nbsp;
+                            <img src="front/asset/img/home/arrow.png" alt="right icon" height="22px">&nbsp;
                             <p class="text-14">{{ __('messages.about_share_post5') }}
                             </p>
                         </li>
                     </ul>
                 </div>
                 <div class="col-lg-6 ">
-                    <img src="/front/asset/img/home/about2.jpg" alt="" class="img-responsive-here" height="400px"
+                    <img src="front/asset/img/home/about2.jpg" alt="" class="img-responsive-here" height="400px"
                         width="100%">
                 </div>
             </div>
@@ -111,7 +111,7 @@
                 <div class="col-md-3 col-sm-6">
                     <div class="stat-card  bg-white p-3  rounded">
                         <div class="d-flex align-item-center mb-2">
-                            <img src="/front/asset/img/home/arrow.png" alt="right icon" height="22px">&nbsp;
+                            <img src="front/asset/img/home/arrow.png" alt="right icon" height="22px">&nbsp;
                             <h3 class="fs-6 fw-bold">
                                 {{ __('messages.about_stay') }}
                                 </h3>
@@ -123,7 +123,7 @@
                 <div class="col-md-3 col-sm-6">
                     <div class="stat-card  bg-white p-3  rounded">
                         <div class="d-flex align-item-center mb-2">
-                            <img src="/front/asset/img/home/arrow.png" alt="right icon" height="22px">&nbsp;
+                            <img src="front/asset/img/home/arrow.png" alt="right icon" height="22px">&nbsp;
                             <h3 class="fs-6 fw-bold">{{ __('messages.about_prometed') }}</h3>
                         </div>
 
@@ -133,7 +133,7 @@
                 <div class="col-md-3 col-sm-6">
                     <div class="stat-card  bg-white p-3  rounded">
                         <div class="d-flex align-item-center mb-2">
-                            <img src="/front/asset/img/home/arrow.png" alt="right icon" height="22px">&nbsp;
+                            <img src="front/asset/img/home/arrow.png" alt="right icon" height="22px">&nbsp;
                             <h3 class="fs-6 fw-bold">{{ __('messages.about_accidental') }}</h3>
                         </div>
 
@@ -144,7 +144,7 @@
                 <div class="col-md-3 col-sm-6">
                     <div class="stat-card  bg-white p-3  rounded">
                         <div class="d-flex align-item-center mb-2">
-                            <img src="/front/asset/img/home/arrow.png" alt="right icon" height="22px">&nbsp;
+                            <img src="front/asset/img/home/arrow.png" alt="right icon" height="22px">&nbsp;
                             <h3 class="fs-6 fw-bold">{{ __('messages.about_social') }}</h3>
                         </div>
 
@@ -168,7 +168,7 @@
             {{-- <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
                 <div class="col">
                     <div class="card h-100 shadow-sm">
-                        <img src="/front/asset/img/home/Frame5.png" class="card-img-top" alt="Blog post image">
+                        <img src="front/asset/img/home/Frame5.png" class="card-img-top" alt="Blog post image">
                         <div class="card-body">
                             <h5 class="card-title">10 Tips for Productive Remote Work</h5>
                             <p class="card-text">Learn how to stay focused and efficient while working from home with
@@ -187,7 +187,7 @@
 
                 <div class="col">
                     <div class="card h-100 shadow-sm">
-                        <img src="/front/asset/img/home/Frame6.png" class="card-img-top" alt="Blog post image">
+                        <img src="front/asset/img/home/Frame6.png" class="card-img-top" alt="Blog post image">
                         <div class="card-body">
                             <h5 class="card-title">The Future of Artificial Intelligence</h5>
                             <p class="card-text">Explore the potential impact of AI on various industries and our daily
@@ -206,7 +206,7 @@
 
                 <div class="col">
                     <div class="card h-100 shadow-sm">
-                        <img src="/front/asset/img/home/Frame7.png" class="card-img-top" alt="Blog post image">
+                        <img src="front/asset/img/home/Frame7.png" class="card-img-top" alt="Blog post image">
                         <div class="card-body">
                             <h5 class="card-title">Sustainable Living: Small Changes, Big Impact</h5>
                             <p class="card-text">Discover easy ways to reduce your carbon footprint and live a more
@@ -233,7 +233,7 @@
                 @if($blog->cover_image)
                     <img src="{{ asset('admin/uploads/blogs/'.$blog->cover_image) }}" class="card-img-top" alt="{{ $blog->title }}">
                 @else
-                    <img src="/front/asset/img/home/Frame5.png" class="card-img-top" alt="Default Blog Image">
+                    <img src="front/asset/img/home/Frame5.png" class="card-img-top" alt="Default Blog Image">
                 @endif
 
                 <div class="card-body">
@@ -278,7 +278,7 @@
                     </div>
                 </div>
                 <div class="col-lg-5">
-                    <img src="/front/asset/img/home/hand-holding.png" alt="" class="img-mic">
+                    <img src="front/asset/img/home/hand-holding.png" alt="" class="img-mic">
                 </div>
             </div>
         </div>
